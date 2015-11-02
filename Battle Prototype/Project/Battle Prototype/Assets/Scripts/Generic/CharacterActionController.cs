@@ -12,6 +12,7 @@ namespace Scripts.Generic
         private bool _actionInProgress;
         private float _autoActionCooldown;
         private bool _takingDamage;
+        private float _currentHealth;
 
         public Transform Transform { set { _transform = value; _statusEventDispatcher.Source = value; } }
         public Rigidbody2D RigidBody { set { _rigidBody = value; } }
@@ -27,6 +28,7 @@ namespace Scripts.Generic
 
             _actionInProgress = false;
             _autoActionCooldown = 0.0f;
+            _currentHealth = Initial_Health;
 
             _statusEventDispatcher = new StatusEventDispatcher();
         }
@@ -142,22 +144,22 @@ namespace Scripts.Generic
             _characterAnimator.SetBool("AutoAction", true);
         }
 
-        private void HandleAnimationEvent(Transform source, AnimationEventDispatcher.AnimationEvent message)
+        private void HandleAnimationEvent(Transform source, AnimationEvent message)
         {
             if (source == _transform)
             {
                 switch (message)
                 {
-                    case AnimationEventDispatcher.AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
-                    case AnimationEventDispatcher.AnimationEvent.AutoActionComplete: CompleteAutoAction(); break;
-                    case AnimationEventDispatcher.AnimationEvent.InjurySequenceComplete: RecoverFromInjury(); break;
+                    case AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
+                    case AnimationEvent.AutoActionComplete: CompleteAutoAction(); break;
+                    case AnimationEvent.InjurySequenceComplete: RecoverFromInjury(); break;
                 }
             }
         }
 
         private void InvokeAutoActionEffect()
         {
-            _statusEventDispatcher.FireStatusEvent(ActionTarget, "auto action", 1.0f);
+            _statusEventDispatcher.FireStatusEvent(ActionTarget, StatusEvent.TakeDamage, 1.0f);
             _autoActionCooldown = Time_Between_Auto_Actions * Speed;
         }
 
@@ -167,29 +169,55 @@ namespace Scripts.Generic
             _characterAnimator.SetBool("AutoAction", false);
         }
 
-        private void HandleStatusEvent(Transform source, Transform target, string message, float value)
-        {
-            if (target == _transform)
-            {
-                CompleteAutoAction();
-                _characterAnimator.SetBool("TakeDamage", true);
-                _takingDamage = true;
-            }
-        }
-
         private void RecoverFromInjury()
         {
             _characterAnimator.SetBool("TakeDamage", false);
             _takingDamage = false;
         }
 
+        private void HandleStatusEvent(Transform source, Transform target, StatusEvent message, float value)
+        {
+            if (target == _transform)
+            {
+                switch (message)
+                {
+                    case StatusEvent.TakeDamage: AdjustHealth(value); break;
+                }
+
+                CompleteAutoAction();
+                _characterAnimator.SetBool("TakeDamage", true);
+                _takingDamage = true;
+            }
+        }
+
+        private void AdjustHealth(float delta)
+        {
+            _currentHealth -= delta;
+            CompleteAutoAction();
+            _statusEventDispatcher.FireStatusEvent(_transform, StatusEvent.SetHealthBarValue, _currentHealth / Initial_Health);
+
+            Debug.Log(_transform.name + " health: " + _currentHealth.ToString());
+
+            if (_currentHealth > 0.0f)
+            {
+                _characterAnimator.SetBool("TakeDamage", true);
+                _takingDamage = true;
+            }
+            else
+            {
+                _characterAnimator.SetBool("Dead", true);
+                StopMoving();
+                // TODO: Set death flag, fire event to tell all characters targeting this one that their target is dead
+            }
+        }
+
         private const float Movement_Offset_From_Action_Target = 0.75f;
         private const float AutoAction_Horizontal_Range = 0.05f;
         private const float AutoAction_Vertical_Range = 0.05f;
 
+        // Characteristics - probably want to open these up at some stage!
         private const float Speed = 0.75f;
-
         private const float Time_Between_Auto_Actions = 2.0f;
-
+        private const float Initial_Health = 13.0f;
     }
 }

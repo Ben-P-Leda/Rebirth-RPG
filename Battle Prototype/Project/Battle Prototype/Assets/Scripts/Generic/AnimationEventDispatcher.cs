@@ -18,12 +18,13 @@ namespace Scripts.Generic
         {
             if (AnimationEventHandler != null) { AnimationEventHandler(_transform.parent, message); }
         }
+    }
 
-        public enum AnimationEvent
-        {
-            AutoActionEffectOccurs,
-            AutoActionComplete,
-            InjurySequenceComplete
-        }
+    public enum AnimationEvent
+    {
+        AutoActionEffectOccurs,
+        AutoActionComplete,
+        InjurySequenceComplete,
+        DeathSequenceComplete
     }
 }

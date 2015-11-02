@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\Generic\AnimationEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Generic\CharacterActionController.cs" />
      <Compile Include="Assets\Scripts\Generic\DepthController.cs" />
+     <Compile Include="Assets\Scripts\Generic\HealthBar.cs" />
      <Compile Include="Assets\Scripts\Generic\SelectionController.cs" />
      <Compile Include="Assets\Scripts\Generic\StatusEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\MouseListener.cs" />
