@@ -22,7 +22,8 @@ namespace Scripts.Generic
         public enum AnimationEvent
         {
             AutoActionEffectOccurs,
-            AutoActionComplete
+            AutoActionComplete,
+            InjurySequenceComplete
         }
     }
 }

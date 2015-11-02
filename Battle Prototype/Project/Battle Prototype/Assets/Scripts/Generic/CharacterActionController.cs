@@ -11,6 +11,7 @@ namespace Scripts.Generic
 
         private bool _actionInProgress;
         private float _autoActionCooldown;
+        private bool _takingDamage;
 
         public Transform Transform { set { _transform = value; _statusEventDispatcher.Source = value; } }
         public Rigidbody2D RigidBody { set { _rigidBody = value; } }
@@ -44,6 +45,19 @@ namespace Scripts.Generic
 
         public void Update()
         {
+            if (!_takingDamage)
+            {
+                SetMovementTargetAndDirection();
+                ActAccordingToTargetProximity();
+            }
+            else
+            {
+                StopMoving();
+            }
+        }
+
+        private void SetMovementTargetAndDirection()
+        {
             if (!_actionInProgress)
             {
                 if (ActionTarget != null)
@@ -56,7 +70,10 @@ namespace Scripts.Generic
                     FaceTarget(MovementTarget);
                 }
             }
+        }
 
+        private void ActAccordingToTargetProximity()
+        {
             if (!CloseEnoughToMovementTarget())
             {
                 if (!_actionInProgress)
@@ -129,10 +146,13 @@ namespace Scripts.Generic
         {
             if (source == _transform)
             {
+                Debug.Log(string.Format("{0} - AE: {1}", _transform.name, message));
+
                 switch (message)
                 {
                     case AnimationEventDispatcher.AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
                     case AnimationEventDispatcher.AnimationEvent.AutoActionComplete: CompleteAutoAction(); break;
+                    case AnimationEventDispatcher.AnimationEvent.InjurySequenceComplete: RecoverFromInjury(); break;
                 }
             }
         }
@@ -155,7 +175,15 @@ namespace Scripts.Generic
             if (target == _transform)
             {
                 Debug.Log(string.Format("{3} - SE from {0}: {1} (value {2})", source.name, message, value, target.name));
+                _characterAnimator.SetBool("TakeDamage", true);
+                _takingDamage = true;
             }
+        }
+
+        private void RecoverFromInjury()
+        {
+            _characterAnimator.SetBool("TakeDamage", false);
+            _takingDamage = false;
         }
 
         private const float Movement_Offset_From_Action_Target = 0.75f;
