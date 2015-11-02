@@ -146,8 +146,6 @@ namespace Scripts.Generic
         {
             if (source == _transform)
             {
-                Debug.Log(string.Format("{0} - AE: {1}", _transform.name, message));
-
                 switch (message)
                 {
                     case AnimationEventDispatcher.AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
@@ -160,21 +158,20 @@ namespace Scripts.Generic
         private void InvokeAutoActionEffect()
         {
             _statusEventDispatcher.FireStatusEvent(ActionTarget, "auto action", 1.0f);
+            _autoActionCooldown = Time_Between_Auto_Actions * Speed;
         }
 
         private void CompleteAutoAction()
         {
             _actionInProgress = false;
             _characterAnimator.SetBool("AutoAction", false);
-
-            _autoActionCooldown = Time_Between_Auto_Actions;
         }
 
         private void HandleStatusEvent(Transform source, Transform target, string message, float value)
         {
             if (target == _transform)
             {
-                Debug.Log(string.Format("{3} - SE from {0}: {1} (value {2})", source.name, message, value, target.name));
+                CompleteAutoAction();
                 _characterAnimator.SetBool("TakeDamage", true);
                 _takingDamage = true;
             }
