@@ -27,7 +27,14 @@ namespace Scripts.Generic
         {
             if ((target == _parentTransform) && (message == StatusEvent.SetHealthBarValue))
             {
-                _barTransform.localScale = new Vector3(value, 1.0f, 1.0f);
+                if (value <= 0.0f)
+                {
+                    gameObject.SetActive(false);
+                }
+                else
+                {
+                    _barTransform.localScale = new Vector3(value, 1.0f, 1.0f);
+                }
             }
         }
     }

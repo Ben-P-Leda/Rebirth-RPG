@@ -179,14 +179,20 @@ namespace Scripts.Generic
         {
             if (target == _transform)
             {
-                switch (message)
-                {
-                    case StatusEvent.TakeDamage: AdjustHealth(value); break;
-                }
+                HandleOwnStatusChange(message, value);
+            }
+            else if (target == ActionTarget)
+            {
+                HandleTargetStatusChange(message, value);
+            }
 
-                CompleteAutoAction();
-                _characterAnimator.SetBool("TakeDamage", true);
-                _takingDamage = true;
+        }
+
+        private void HandleOwnStatusChange(StatusEvent message, float value)
+        {
+            switch (message)
+            {
+                case StatusEvent.TakeDamage: AdjustHealth(value); break;
             }
         }
 
@@ -195,8 +201,6 @@ namespace Scripts.Generic
             _currentHealth -= delta;
             CompleteAutoAction();
             _statusEventDispatcher.FireStatusEvent(_transform, StatusEvent.SetHealthBarValue, _currentHealth / Initial_Health);
-
-            Debug.Log(_transform.name + " health: " + _currentHealth.ToString());
 
             if (_currentHealth > 0.0f)
             {
@@ -207,8 +211,23 @@ namespace Scripts.Generic
             {
                 _characterAnimator.SetBool("Dead", true);
                 StopMoving();
-                // TODO: Set death flag, fire event to tell all characters targeting this one that their target is dead
+                _statusEventDispatcher.FireStatusEvent(_transform, StatusEvent.Death, 0.0f);
             }
+        }
+
+        private void HandleTargetStatusChange(StatusEvent message, float value)
+        {
+            switch (message)
+            {
+                case StatusEvent.Death: HandleTargetDeath() ; break;
+            }
+        }
+
+        private void HandleTargetDeath()
+        {
+            CompleteAutoAction();
+            StopMoving();
+            ActionTarget = null;
         }
 
         private const float Movement_Offset_From_Action_Target = 0.75f;
@@ -218,6 +237,6 @@ namespace Scripts.Generic
         // Characteristics - probably want to open these up at some stage!
         private const float Speed = 0.75f;
         private const float Time_Between_Auto_Actions = 2.0f;
-        private const float Initial_Health = 13.0f;
+        private const float Initial_Health = 3.0f;
     }
 }
