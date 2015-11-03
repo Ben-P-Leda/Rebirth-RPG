@@ -1,0 +1,132 @@
+fileFormatVersion: 2
+guid: eb34d62a4768b304f997a7fd81e37f27
+timeCreated: 1445932082
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: P_Head
+    21300002: P_Forearm
+    21300004: P_Thigh
+    21300006: P_Bicep
+    21300008: P_Shin
+    21300010: P_Body
+    21300012: P_Hip
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 128
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: P_Head
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 0
+        width: 52
+        height: 52
+      alignment: 9
+      pivot: {x: .502313554, y: .0673677996}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Forearm
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 35
+        width: 14
+        height: 17
+      alignment: 9
+      pivot: {x: .345323294, y: .754761875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Thigh
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 37
+        width: 9
+        height: 15
+      alignment: 9
+      pivot: {x: .513367534, y: .764669299}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Bicep
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 31
+        width: 16
+        height: 21
+      alignment: 9
+      pivot: {x: .402252674, y: .797896087}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Shin
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 17
+        width: 16
+        height: 16
+      alignment: 9
+      pivot: {x: .349619865, y: .800760508}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Body
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 9
+        width: 26
+        height: 20
+      alignment: 9
+      pivot: {x: .57403332, y: .241346076}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: P_Hip
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 2
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
