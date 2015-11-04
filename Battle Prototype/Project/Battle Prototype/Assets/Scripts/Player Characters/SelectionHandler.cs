@@ -34,56 +34,58 @@ namespace Scripts.Player_Characters
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
         {
-            Debug.Log(_transform.name + " got event " + message.ToString() + " from " + originator.name);
-
-            if ((message == StatusMessage.CharacterSelected) && (target == _transform))
+            switch (message)
             {
-                if (ActiveCharacterAwaitingAlliedTarget())
-                {
-                    Debug.Log(_currentActiveCharacter.name + ": setting target to " + _transform.name);
-                    _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.ActionTargetSelected, 0.0f);
-                }
-                else
-                {
-                    CheckForActivation(target);
-                }
-            }
-
-            if ((message == StatusMessage.CharacterActivated) && (target != _transform))
-            {
-                Debug.Log(_transform.name + " logged " + target.name + " as the active character");
-
-                _currentActiveCharacter = target;
-            }
-
-            if (message == StatusMessage.ActionTargetSelected)
-            {
-                _currentActiveCharacter = null;
-                Debug.Log(_transform.name + " cleared current character selection");
+                case StatusMessage.CharacterSelected: HandleCharacterSelection(target); break;
+                case StatusMessage.CharacterActivated: SetActiveCharacter(target); break;
+                case StatusMessage.CharacterDeactivated: SetActiveCharacter(null); break;
             }
         }
 
-        private bool ActiveCharacterAwaitingAlliedTarget()
+        private void HandleCharacterSelection(Transform selection)
         {
-            bool currentCharacterTargetsAllies = false;
-
-            if ((_currentActiveCharacter != null)  && (_currentActiveCharacter.tag.ToLower().Contains("healer")))
+            if (selection == _transform)
             {
-                currentCharacterTargetsAllies = true;
+                Debug.Log(_transform.name + " handle self");
+                HandleSelfSelection();
             }
-
-            if (currentCharacterTargetsAllies)
-                Debug.Log("CURRENT SELECTION TARGETS ALLIES! (" + _transform.name + ")");
-
-            return currentCharacterTargetsAllies;
+            else if (_currentActiveCharacter == _transform)
+            {
+                Debug.Log(_transform.name + " handle other when active " + selection.name);
+                HandleOtherSelectionWhenActive(selection);
+            }
         }
 
-        private void CheckForActivation(Transform selectedCharacterTransform)
+        private void HandleSelfSelection()
         {
-            Debug.Log(_transform.name + " was set to active");
+            if (CharacterUtilities.CharacterTargetsAllies(_currentActiveCharacter))
+            {
+                Debug.Log(_currentActiveCharacter.name + ": targets FRIENDLIES - setting target to " + _transform.name);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.AlliedActionTargetSelected, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
+            }
+            else
+            {
+                Debug.Log(_transform.name + " was set to active");
+                _currentActiveCharacter = _transform;
+                _statusEventDispatcher.FireStatusEvent(_transform, StatusMessage.CharacterActivated, 0.0f);
+            }
+        }
 
-            _currentActiveCharacter = _transform;
-            _statusEventDispatcher.FireStatusEvent(_transform, StatusMessage.CharacterActivated, 0.0f);
+        private void HandleOtherSelectionWhenActive(Transform selection)
+        {
+            if ((!CharacterUtilities.CharacterTargetsAllies(_transform)) && (!CharacterUtilities.CharactersAreAllies(_transform, selection)))
+            {
+                Debug.Log(_transform.name + ": targets HOSTILES - setting target to " + selection.name);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.EnemyActionTargetSelected, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
+            }
+        }
+
+        private void SetActiveCharacter(Transform activeCharacter)
+        {
+            _currentActiveCharacter = activeCharacter;
+            Debug.Log(_transform.name + (activeCharacter == null ? " cleared current character selection" : " logged as active by " + activeCharacter.name));
         }
     }
 }

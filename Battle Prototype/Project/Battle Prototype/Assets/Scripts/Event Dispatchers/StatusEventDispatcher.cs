@@ -19,6 +19,8 @@ namespace Scripts.Event_Dispatchers
     {
         CharacterSelected,
         CharacterActivated,
-        ActionTargetSelected
+        CharacterDeactivated,
+        AlliedActionTargetSelected,
+        EnemyActionTargetSelected
     }
 }
