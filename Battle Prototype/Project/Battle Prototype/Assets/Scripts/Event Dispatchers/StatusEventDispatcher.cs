@@ -11,7 +11,10 @@ namespace Scripts.Event_Dispatchers
 
         public void FireStatusEvent(Transform target, StatusMessage message, float value)
         {
-            if (StatusEventHandler != null) { StatusEventHandler(Source, target, message, value); }
+            if (StatusEventHandler != null) 
+            { 
+                StatusEventHandler(Source, target, message, value); 
+            }
         }
     }
 

@@ -33,7 +33,6 @@ namespace Scripts.Event_Dispatchers
                 if (FieldClickHandler != null)
                 {
                     FieldClickHandler(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                    Debug.Log("---> Event fired!");
                 }
             }
         }
