@@ -7,7 +7,7 @@ namespace Scripts.Player_Characters
     {
         private Transform _parentTransform;
         private SpriteRenderer _renderer;
-        private bool _nextSelectionSelectsFriendlyTarget;
+        private bool _currentSelectionTargetsAllies;
         private string _faction;
 
         private void OnEnable()
@@ -27,21 +27,21 @@ namespace Scripts.Player_Characters
             _parentTransform = transform.parent;
             _renderer = transform.GetComponent<SpriteRenderer>();
 
-            _nextSelectionSelectsFriendlyTarget = false;
+            _currentSelectionTargetsAllies = false;
             _faction = _parentTransform.tag.Substring(0, _parentTransform.tag.IndexOf("-"));
         }
 
         private void HandleSelectionChange(Transform targetTransform)
         {
-            if (_nextSelectionSelectsFriendlyTarget)
+            if (_currentSelectionTargetsAllies)
             {
                 _renderer.enabled = false;
-                _nextSelectionSelectsFriendlyTarget = false;
+                _currentSelectionTargetsAllies = false;
             }
             else
             {
                 _renderer.enabled = (_parentTransform == targetTransform);
-                _nextSelectionSelectsFriendlyTarget = (targetTransform.tag == _faction + "-Healer");
+                _currentSelectionTargetsAllies = (targetTransform.tag == _faction + "-Healer");
             }
         }
 

@@ -48,8 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Enemy Characters\ActionController.cs" />
+    <Compile Include="Assets\Scripts\Generic\ActionTargetResolver.cs" />
     <Compile Include="Assets\Scripts\Generic\AnimationEventDispatcher.cs" />
     <Compile Include="Assets\Scripts\Generic\CharacterActionController.cs" />
+    <Compile Include="Assets\Scripts\Generic\CharacterStats.cs" />
     <Compile Include="Assets\Scripts\Generic\DepthController.cs" />
     <Compile Include="Assets\Scripts\Generic\HealthBar.cs" />
     <Compile Include="Assets\Scripts\Generic\SelectionController.cs" />

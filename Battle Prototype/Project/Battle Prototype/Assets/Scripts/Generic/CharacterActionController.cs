@@ -7,14 +7,14 @@ namespace Scripts.Generic
         private Transform _transform;
         private Rigidbody2D _rigidBody;
         private Animator _characterAnimator;
+
+        private CharacterStats _stats;
         private StatusEventDispatcher _statusEventDispatcher;
 
         private bool _actionInProgress;
-        private float _autoActionCooldown;
         private bool _takingDamage;
-        private float _currentHealth;
 
-        public Transform Transform { set { _transform = value; _statusEventDispatcher.Source = value; } }
+        public Transform Transform { set { _transform = value; _statusEventDispatcher.Source = value; _stats.CreateForRole(value.tag); } }
         public Rigidbody2D RigidBody { set { _rigidBody = value; } }
         public Animator Animator { set { _characterAnimator = value; } }
 
@@ -27,10 +27,9 @@ namespace Scripts.Generic
             MovementTarget = Vector3.zero;
 
             _actionInProgress = false;
-            _autoActionCooldown = 0.0f;
-            _currentHealth = Initial_Health;
 
             _statusEventDispatcher = new StatusEventDispatcher();
+            _stats = new CharacterStats();
         }
 
         public void WireUpEventHandlers()
@@ -56,6 +55,8 @@ namespace Scripts.Generic
             {
                 StopMoving();
             }
+
+            _stats.UpdateCooldownTimer(Time.deltaTime);
         }
 
         private void SetMovementTargetAndDirection()
@@ -86,20 +87,18 @@ namespace Scripts.Generic
             else
             {
                 StopMoving();
-                if ((ActionTarget != null) && (_autoActionCooldown <= 0.0f))
+                if ((ActionTarget != null) && (_stats.ReadyForAutoAction))
                 {
                     StartAutoAction();
                 }
             }
-
-            _autoActionCooldown = Mathf.Max(_autoActionCooldown - Time.deltaTime, 0.0f);
         }
 
         private void SetMovementTargetToActionTargetPosition()
         {
             float x = (_transform.position.x > ActionTarget.position.x)
-                ? ActionTarget.position.x + Movement_Offset_From_Action_Target
-                : ActionTarget.position.x - Movement_Offset_From_Action_Target;
+                ? ActionTarget.position.x + _stats.MovementOffsetFromActionTarget
+                : ActionTarget.position.x - _stats.MovementOffsetFromActionTarget;
 
             MovementTarget = new Vector3(x, ActionTarget.position.y, 0.0f);
         }
@@ -111,8 +110,8 @@ namespace Scripts.Generic
 
         private bool CloseEnoughToMovementTarget()
         {
-            return (WithinRange(_transform.position.x, MovementTarget.x, AutoAction_Horizontal_Range)
-                && WithinRange(_transform.position.y, MovementTarget.y, AutoAction_Vertical_Range));
+            return (WithinRange(_transform.position.x, MovementTarget.x, _stats.AutoActionHorizontalRange)
+                && WithinRange(_transform.position.y, MovementTarget.y, _stats.AutoActionVerticalRange));
         }
 
         private void FaceTarget(Vector3 targetPosition)
@@ -126,10 +125,10 @@ namespace Scripts.Generic
         private void MoveTowardsTarget()
         {
             Vector2 direction = MovementTarget - _transform.position;
-            _rigidBody.velocity = direction.normalized * Speed;
+            _rigidBody.velocity = direction.normalized * _stats.Speed;
 
             _characterAnimator.SetBool("Moving", true);
-            _characterAnimator.speed = Speed;
+            _characterAnimator.speed = _stats.Speed;
         }
 
         private void StopMoving()
@@ -160,7 +159,7 @@ namespace Scripts.Generic
         private void InvokeAutoActionEffect()
         {
             _statusEventDispatcher.FireStatusEvent(ActionTarget, StatusEvent.TakeDamage, 1.0f);
-            _autoActionCooldown = Time_Between_Auto_Actions * Speed;
+            _stats.ResetAutoActionCooldown();
         }
 
         private void CompleteAutoAction()
@@ -198,11 +197,11 @@ namespace Scripts.Generic
 
         private void AdjustHealth(float delta)
         {
-            _currentHealth -= delta;
             CompleteAutoAction();
-            _statusEventDispatcher.FireStatusEvent(_transform, StatusEvent.SetHealthBarValue, _currentHealth / Initial_Health);
+            _stats.UpdateHealth(delta);
+            _statusEventDispatcher.FireStatusEvent(_transform, StatusEvent.SetHealthBarValue, _stats.HealthFraction);
 
-            if (_currentHealth > 0.0f)
+            if (!_stats.IsDead)
             {
                 _characterAnimator.SetBool("TakeDamage", true);
                 _takingDamage = true;
@@ -229,14 +228,5 @@ namespace Scripts.Generic
             StopMoving();
             ActionTarget = null;
         }
-
-        private const float Movement_Offset_From_Action_Target = 0.75f;
-        private const float AutoAction_Horizontal_Range = 0.05f;
-        private const float AutoAction_Vertical_Range = 0.05f;
-
-        // Characteristics - probably want to open these up at some stage!
-        private const float Speed = 0.75f;
-        private const float Time_Between_Auto_Actions = 2.0f;
-        private const float Initial_Health = 3.0f;
     }
 }
