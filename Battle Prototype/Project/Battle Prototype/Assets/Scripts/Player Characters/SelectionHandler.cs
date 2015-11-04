@@ -4,32 +4,27 @@ using Scripts.Event_Dispatchers;
 
 namespace Scripts.Player_Characters
 {
-    public class SelectionHandler : MonoBehaviour
+    public class SelectionHandler
     {
-        private Transform _transform;
         private StatusEventDispatcher _statusEventDispatcher;
         private Transform _currentActiveCharacter;
 
-        private SelectionHandler() : base()
+        public Transform Transform { private get; set; }
+
+        public SelectionHandler(StatusEventDispatcher statusEventDispatcher)
         {
-            _statusEventDispatcher = new StatusEventDispatcher();
+            _statusEventDispatcher = statusEventDispatcher;
             _currentActiveCharacter = null;
         }
 
-        private void OnEnable()
+        public void WireUpEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
         }
 
-        private void OnDisable()
+        public void UnhookEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
-        }
-
-        private void Awake()
-        {
-            _transform = transform;
-            _statusEventDispatcher.Source = transform;
         }
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
@@ -44,14 +39,14 @@ namespace Scripts.Player_Characters
 
         private void HandleCharacterSelection(Transform selection)
         {
-            if (selection == _transform)
+            if (selection == Transform)
             {
-                Debug.Log(_transform.name + " handle self");
+                Debug.Log(Transform.name + " handle self");
                 HandleSelfSelection();
             }
-            else if (_currentActiveCharacter == _transform)
+            else if (_currentActiveCharacter == Transform)
             {
-                Debug.Log(_transform.name + " handle other when active " + selection.name);
+                Debug.Log(Transform.name + " handle other when active " + selection.name);
                 HandleOtherSelectionWhenActive(selection);
             }
         }
@@ -60,23 +55,23 @@ namespace Scripts.Player_Characters
         {
             if (CharacterUtilities.CharacterTargetsAllies(_currentActiveCharacter))
             {
-                Debug.Log(_currentActiveCharacter.name + ": targets FRIENDLIES - setting target to " + _transform.name);
+                Debug.Log(_currentActiveCharacter.name + ": targets FRIENDLIES - setting target to " + Transform.name);
                 _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.AlliedActionTargetSelected, 0.0f);
                 _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
             }
             else
             {
-                Debug.Log(_transform.name + " was set to active");
-                _currentActiveCharacter = _transform;
-                _statusEventDispatcher.FireStatusEvent(_transform, StatusMessage.CharacterActivated, 0.0f);
+                Debug.Log(Transform.name + " was set to active");
+                _currentActiveCharacter = Transform;
+                _statusEventDispatcher.FireStatusEvent(Transform, StatusMessage.CharacterActivated, 0.0f);
             }
         }
 
         private void HandleOtherSelectionWhenActive(Transform selection)
         {
-            if ((!CharacterUtilities.CharacterTargetsAllies(_transform)) && (!CharacterUtilities.CharactersAreAllies(_transform, selection)))
+            if ((!CharacterUtilities.CharacterTargetsAllies(Transform)) && (!CharacterUtilities.CharactersAreAllies(Transform, selection)))
             {
-                Debug.Log(_transform.name + ": targets HOSTILES - setting target to " + selection.name);
+                Debug.Log(Transform.name + ": targets HOSTILES - setting target to " + selection.name);
                 _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.EnemyActionTargetSelected, 0.0f);
                 _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
             }
@@ -85,7 +80,7 @@ namespace Scripts.Player_Characters
         private void SetActiveCharacter(Transform activeCharacter)
         {
             _currentActiveCharacter = activeCharacter;
-            Debug.Log(_transform.name + (activeCharacter == null ? " cleared current character selection" : " logged as active by " + activeCharacter.name));
+            Debug.Log(Transform.name + (activeCharacter == null ? " cleared current character selection" : " logged as active by " + activeCharacter.name));
         }
     }
 }

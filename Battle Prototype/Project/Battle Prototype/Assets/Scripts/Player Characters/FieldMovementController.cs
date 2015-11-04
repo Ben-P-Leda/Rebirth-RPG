@@ -10,14 +10,20 @@ namespace Scripts.Player_Characters
 
         private Transform _transform;
         private bool _isActive;
+        private bool _isMoving;
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
         public Rigidbody2D Rigidbody2D { private get; set; }
 
+        public float MovementSpeed { private get; set; }
+
         public FieldMovementController(DisplayController displayController)
         {
             _displayController = displayController;
+
+            _isActive = false;
+            _isMoving = false;
         }
 
         public void WireUpEventHandlers()
@@ -34,16 +40,20 @@ namespace Scripts.Player_Characters
 
         public void Update()
         {
-            Vector3 vectorToTarget = _movementTarget - _transform.position;
+            if (_isMoving)
+            {
+                Vector2 vectorToTarget = _movementTarget - _transform.position;
 
-            if (vectorToTarget.magnitude > Movement_Target_Stopping_Distance)
-            {
-                Rigidbody2D.velocity = vectorToTarget.normalized;
-                _displayController.SetFacing(_movementTarget);
-            }
-            else
-            {
-                Rigidbody2D.velocity = Vector3.zero;
+                if (vectorToTarget.magnitude > Movement_Target_Stopping_Distance)
+                {
+                    Rigidbody2D.velocity = vectorToTarget.normalized * MovementSpeed;
+                    _displayController.SetFacing(_movementTarget);
+                }
+                else
+                {
+                    Rigidbody2D.velocity = Vector3.zero;
+                    _isMoving = false;
+                }
             }
         }
 
@@ -60,7 +70,8 @@ namespace Scripts.Player_Characters
         {
             if (_isActive)
             {
-                _movementTarget = clickLocation;
+                _movementTarget = new Vector3(clickLocation.x, clickLocation.y, _transform.position.z);
+                _isMoving = true;
             }
         }
 

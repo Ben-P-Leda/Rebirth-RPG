@@ -49,8 +49,8 @@
      <Compile Include="Assets\Scripts\All Characters\DepthController.cs" />
      <Compile Include="Assets\Scripts\All Characters\DisplayController.cs" />
      <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
+     <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterController.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
-     <Compile Include="Assets\Scripts\Event Dispatchers\SelectionEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Player Characters\ActiveStateIndicator.cs" />
      <Compile Include="Assets\Scripts\Player Characters\FieldMovementController.cs" />
