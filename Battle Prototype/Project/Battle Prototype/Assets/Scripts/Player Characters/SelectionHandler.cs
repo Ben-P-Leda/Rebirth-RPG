@@ -72,8 +72,8 @@ namespace Scripts.Player_Characters
             if ((!CharacterUtilities.CharacterTargetsAllies(Transform)) && (!CharacterUtilities.CharactersAreAllies(Transform, selection)))
             {
                 Debug.Log(Transform.name + ": targets HOSTILES - setting target to " + selection.name);
-                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.EnemyActionTargetSelected, 0.0f);
-                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.EnemyActionTargetSelected, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.CharacterDeactivated, 0.0f);
             }
         }
 

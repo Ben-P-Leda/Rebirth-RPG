@@ -51,10 +51,15 @@ namespace Scripts.Player_Characters
                 }
                 else
                 {
-                    Rigidbody2D.velocity = Vector3.zero;
-                    _isMoving = false;
+                    StopMoving();
                 }
             }
+        }
+
+        private void StopMoving()
+        {
+            Rigidbody2D.velocity = Vector3.zero;
+            _isMoving = false;
         }
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
@@ -63,6 +68,8 @@ namespace Scripts.Player_Characters
             {
                 case StatusMessage.CharacterActivated: _isActive = (_transform == target); break;
                 case StatusMessage.CharacterDeactivated: _isActive = false; break;
+                case StatusMessage.EnemyActionTargetSelected: AbortMovementIfOwnTargetSpecified(originator, target); break;
+                case StatusMessage.AlliedActionTargetSelected: AbortMovementIfOwnTargetSpecified(target, originator); break;
             }
         }
 
@@ -72,6 +79,14 @@ namespace Scripts.Player_Characters
             {
                 _movementTarget = new Vector3(clickLocation.x, clickLocation.y, _transform.position.z);
                 _isMoving = true;
+            }
+        }
+
+        private void AbortMovementIfOwnTargetSpecified(Transform actionExecuter, Transform actionTarget)
+        {
+            if (actionExecuter == _transform)
+            {
+                StopMoving();
             }
         }
 

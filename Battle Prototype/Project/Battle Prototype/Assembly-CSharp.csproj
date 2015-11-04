@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\All Characters\AutoActionController.cs" />
     <Compile Include="Assets\Scripts\All Characters\DepthController.cs" />
     <Compile Include="Assets\Scripts\All Characters\DisplayController.cs" />
     <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
