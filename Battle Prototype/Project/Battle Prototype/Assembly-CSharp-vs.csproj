@@ -46,16 +46,9 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Enemy Characters\ActionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\AnimationEventDispatcher.cs" />
-     <Compile Include="Assets\Scripts\Generic\CharacterActionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\DepthController.cs" />
-     <Compile Include="Assets\Scripts\Generic\HealthBar.cs" />
-     <Compile Include="Assets\Scripts\Generic\SelectionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\StatusEventDispatcher.cs" />
-     <Compile Include="Assets\Scripts\MouseListener.cs" />
-     <Compile Include="Assets\Scripts\Player Characters\ActionController.cs" />
-     <Compile Include="Assets\Scripts\Player Characters\SelectionMarkerToggle.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\SelectionEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Player Characters\SelectionHandler.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity5/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
