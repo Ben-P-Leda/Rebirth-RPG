@@ -6,6 +6,7 @@ namespace Scripts.All_Characters
     public class HealthManager
     {
         private StatusEventDispatcher _statusEventDispatcher;
+        private DisplayController _displayController;
 
         private Transform _transform;
         private Transform _barTransform;
@@ -16,9 +17,10 @@ namespace Scripts.All_Characters
 
         public Transform Transform { set { _transform = value; _barTransform = value.FindChild("Health Bar Container").FindChild("Health Bar"); } }
 
-        public HealthManager(StatusEventDispatcher statusEventDispatcher)
+        public HealthManager(StatusEventDispatcher statusEventDispatcher, DisplayController displayController)
         {
             _statusEventDispatcher = statusEventDispatcher;
+            _displayController = displayController;
         }
 
         public void WireUpEventHandlers()
@@ -49,6 +51,11 @@ namespace Scripts.All_Characters
         {
             _currentHealth = Mathf.Max(0.0f, _currentHealth - delta);
             UpdateHealthBar();
+            if (_currentHealth <= 0.0f)
+            {
+                _displayController.TriggerDeathAnimation();
+                _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterDead);
+            }
         }
 
         private void HandleHealthGain(float delta)
@@ -59,8 +66,6 @@ namespace Scripts.All_Characters
 
         private void UpdateHealthBar()
         {
-            Debug.Log(_currentHealth.ToString() + "/" + _maximumHealth.ToString());
-
             _barTransform.localScale = new Vector3(_currentHealth / _maximumHealth, 1.0f, 1.0f);
         }
     }

@@ -25,7 +25,7 @@ namespace Scripts.Player_Characters
             _motionEngine.MovementSpeed = 1.0f;
             _displayController = new DisplayController();
 
-            _healthManager = new HealthManager(_statusEventDispatcher);
+            _healthManager = new HealthManager(_statusEventDispatcher, _displayController);
             _healthManager.MaximumHealth = 10.0f;
 
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);

@@ -68,6 +68,7 @@ namespace Scripts.All_Characters
                 case StatusMessage.CompletedFieldMovement: HandleFieldMovementCompletion(target); break;
                 case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target); break;
                 case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator); break;
+                case StatusMessage.CharacterDead: HandleCharacterDeath(originator); break;
             }
         }
 
@@ -98,6 +99,14 @@ namespace Scripts.All_Characters
             {
                 _actionTarget = target;
                 _fieldMovementInProgress = false;
+            }
+        }
+
+        private void HandleCharacterDeath(Transform deadCharacter)
+        {
+            if (deadCharacter == _actionTarget)
+            {
+                _actionTarget = null;
             }
         }
 

@@ -40,6 +40,7 @@ namespace Scripts.Event_Dispatchers
         StartedAutoAction,
         ReduceHealth,
         IncreaseHealth,
-        CompletedAutoAction
+        CompletedAutoAction,
+        CharacterDead
     }
 }

@@ -23,6 +23,7 @@ namespace Scripts.Event_Dispatchers
     public enum AnimationEvent
     {
         AutoActionEffectOccurs,
-        AutoActionComplete
+        AutoActionComplete,
+        DeathSequenceComplete
     }
 }

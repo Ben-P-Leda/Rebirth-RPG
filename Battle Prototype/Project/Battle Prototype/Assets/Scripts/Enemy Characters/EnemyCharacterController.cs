@@ -18,7 +18,7 @@ namespace Scripts.Enemy_Characters
             _statusEventDispatcher = new StatusEventDispatcher();
             _displayController = new DisplayController();
 
-            _healthManager = new HealthManager(_statusEventDispatcher);
+            _healthManager = new HealthManager(_statusEventDispatcher, _displayController);
             _healthManager.MaximumHealth = 5.0f;
         }
 
