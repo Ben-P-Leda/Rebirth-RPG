@@ -48,6 +48,7 @@ namespace Scripts.Player_Characters
                 if (vectorToTarget.magnitude > Movement_Target_Stopping_Distance)
                 {
                     _motionEngine.MoveTowardsPosition(_movementTarget);
+                    _displayController.IsMoving = true;
                     _displayController.SetFacing(_movementTarget);
                 }
                 else
@@ -61,6 +62,7 @@ namespace Scripts.Player_Characters
         private void EndFieldMovement()
         {
             _motionEngine.StopMoving();
+            _displayController.IsMoving = false;
             _isMoving = false;
         }
 

@@ -7,7 +7,9 @@ namespace Scripts.All_Characters
         private Transform _transform;
         private Animator _animator;
 
-        public Transform Transform { set { _transform = value; _animator = value.GetComponent<Animator>(); } }
+        public Transform Transform { set { _transform = value; _animator = value.FindChild("Character").GetComponent<Animator>(); } }
+
+        public bool IsMoving { set { _animator.SetBool("Moving", value); } }
 
         public void SetFacing(Vector3 target)
         {

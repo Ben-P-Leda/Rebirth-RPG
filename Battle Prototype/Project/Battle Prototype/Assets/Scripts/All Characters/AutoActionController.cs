@@ -14,11 +14,13 @@ namespace Scripts.All_Characters
         private bool _fieldMovementInProgress;
         private Transform _actionTarget;
         private Vector3 _actionLocation;
+        private float _cooldownRemaining;
 
         public Transform Transform { private get; set; }
         public Rigidbody2D Rigidbody2D { private get; set; }
         public float ActionLocationOffset { private get; set; }
         public Vector2 RequiredTargetProximity { private get; set; }
+        public float Cooldown { private get; set; }
 
         public AutoActionController(MotionEngine motionEngine, DisplayController displayController)
         {
@@ -30,9 +32,11 @@ namespace Scripts.All_Characters
             _fieldMovementInProgress = false;
             _actionTarget = null;
             _actionLocation = Vector3.zero;
+            _cooldownRemaining = 0.0f;
 
             ActionLocationOffset = 0;
             RequiredTargetProximity = new Vector2(Default_Required_Proximity, Default_Required_Proximity);
+            Cooldown = Default_Cooldown;
         }
 
         public void WireUpEventHandlers()
@@ -102,12 +106,21 @@ namespace Scripts.All_Characters
                 if (CloseEnoughToTarget())
                 {
                     _motionEngine.StopMoving();
+                    _displayController.IsMoving = false;
+
+                    if (_cooldownRemaining <= 0.0f)
+                    {
+                        StartAutoActionSequence();
+                    }
                 }
                 else if (!_actionInProgress)
                 {
                     _motionEngine.MoveTowardsPosition(_actionLocation);
+                    _displayController.IsMoving = true;
                 }
             }
+
+            _cooldownRemaining = Mathf.Max(_cooldownRemaining - Time.deltaTime, 0.0f);
         }
 
         private Vector3 CalculateActionLocation()
@@ -130,7 +143,12 @@ namespace Scripts.All_Characters
             return ((position >= target - range) && (position <= target + range));
         }
 
+        private void StartAutoActionSequence()
+        {
+            _actionInProgress = true;
+        }
 
+        private float Default_Cooldown = 2.0f;
         private const float Default_Required_Proximity = 0.05f;
     }
 }
