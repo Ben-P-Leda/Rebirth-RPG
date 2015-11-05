@@ -18,5 +18,15 @@ namespace Scripts.All_Characters
                 _transform.localScale = new Vector3(_transform.localScale.x * -1, _transform.localScale.y, _transform.localScale.z);
             }
         }
+
+        public void TriggerAutoAction()
+        {
+            _animator.SetBool("AutoAction", true);
+        }
+
+        public void CompleteAutoAction()
+        {
+            _animator.SetBool("AutoAction", false);
+        }
     }
 }

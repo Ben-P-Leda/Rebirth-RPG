@@ -13,6 +13,7 @@ namespace Scripts.Player_Characters
         private Transform _transform;
         private bool _isActive;
         private bool _isMoving;
+        private bool _fieldMovementIsBlocked;
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
@@ -25,6 +26,7 @@ namespace Scripts.Player_Characters
 
             _isActive = false;
             _isMoving = false;
+            _fieldMovementIsBlocked = false;
         }
 
         public void WireUpEventHandlers()
@@ -41,7 +43,11 @@ namespace Scripts.Player_Characters
 
         public void Update()
         {
-            if (_isMoving)
+            if (_fieldMovementIsBlocked)
+            {
+                _motionEngine.StopMoving();
+            }
+            else if (_isMoving)
             {
                 Vector2 vectorToTarget = _movementTarget - _transform.position;
 
@@ -74,6 +80,8 @@ namespace Scripts.Player_Characters
                 case StatusMessage.CharacterDeactivated: _isActive = false; break;
                 case StatusMessage.EnemyActionTargetSelected: AbortMovementIfOwnTargetSpecified(originator, target); break;
                 case StatusMessage.AlliedActionTargetSelected: AbortMovementIfOwnTargetSpecified(target, originator); break;
+                case StatusMessage.StartedAutoAction: BlockMovementIfOwnEvent(target); break;
+                case StatusMessage.CompletedAutoAction: UnblockMovementIfOwnEvent(target); break;
             }
         }
 
@@ -92,6 +100,22 @@ namespace Scripts.Player_Characters
             if (actionExecuter == _transform)
             {
                 EndFieldMovement();
+            }
+        }
+
+        private void BlockMovementIfOwnEvent(Transform target)
+        {
+            if (_transform == target)
+            {
+                _fieldMovementIsBlocked = true;
+            }
+        }
+
+        private void UnblockMovementIfOwnEvent(Transform target)
+        {
+            if (_transform == target)
+            {
+                _fieldMovementIsBlocked = false;
             }
         }
 

@@ -27,7 +27,7 @@ namespace Scripts.Player_Characters
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
 
             _fieldMovementController = new FieldMovementController(_motionEngine, _displayController, _statusEventDispatcher);
-            _autoActionController = new AutoActionController(_motionEngine, _displayController);
+            _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
         }
 
         private void OnEnable()

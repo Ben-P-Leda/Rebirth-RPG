@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\All Characters\MotionEngine.cs" />
      <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
      <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterController.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Player Characters\ActiveStateIndicator.cs" />

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Scripts.Event_Dispatchers;
+using AnimationEvent = Scripts.Event_Dispatchers.AnimationEvent;
 using Scripts.All_Characters;
 
 namespace Scripts.All_Characters
@@ -8,6 +9,7 @@ namespace Scripts.All_Characters
     {
         private MotionEngine _motionEngine;
         private DisplayController _displayController;
+        private StatusEventDispatcher _statusEventDispatcher;
 
         private bool _isActive;
         private bool _actionInProgress;
@@ -22,10 +24,11 @@ namespace Scripts.All_Characters
         public Vector2 RequiredTargetProximity { private get; set; }
         public float Cooldown { private get; set; }
 
-        public AutoActionController(MotionEngine motionEngine, DisplayController displayController)
+        public AutoActionController(MotionEngine motionEngine, DisplayController displayController, StatusEventDispatcher statusEventDispatcher)
         {
             _motionEngine = motionEngine;
             _displayController = displayController;
+            _statusEventDispatcher = statusEventDispatcher;
 
             _isActive = false;
             _actionInProgress = false;
@@ -42,11 +45,13 @@ namespace Scripts.All_Characters
         public void WireUpEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
+            AnimationEventDispatcher.AnimationEventHandler += HandleAnimationEvent;
         }
 
         public void UnhookEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
+            AnimationEventDispatcher.AnimationEventHandler -= HandleAnimationEvent;
         }
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
@@ -146,6 +151,33 @@ namespace Scripts.All_Characters
         private void StartAutoActionSequence()
         {
             _actionInProgress = true;
+            _statusEventDispatcher.FireStatusEvent(StatusMessage.StartedAutoAction);
+            _displayController.TriggerAutoAction();
+        }
+
+        private void HandleAnimationEvent(Transform originator, AnimationEvent message)
+        {
+            if (originator == Transform)
+            {
+                switch (message)
+                {
+                    case AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
+                    case AnimationEvent.AutoActionComplete: CompleteAutoAction(); break;
+                }
+            }
+        }
+
+        private void InvokeAutoActionEffect()
+        {
+
+        }
+
+        private void CompleteAutoAction()
+        {
+            _actionInProgress = false;
+            _statusEventDispatcher.FireStatusEvent(StatusMessage.CompletedAutoAction);
+            _displayController.CompleteAutoAction();
+            _cooldownRemaining = Cooldown;
         }
 
         private float Default_Cooldown = 2.0f;

@@ -36,6 +36,8 @@ namespace Scripts.Event_Dispatchers
         AlliedActionTargetSelected,
         EnemyActionTargetSelected,
         StartedFieldMovement,
-        CompletedFieldMovement
+        CompletedFieldMovement,
+        StartedAutoAction,
+        CompletedAutoAction
     }
 }
