@@ -23,6 +23,8 @@ namespace Scripts.All_Characters
         public float ActionLocationOffset { private get; set; }
         public Vector2 RequiredTargetProximity { private get; set; }
         public float Cooldown { private get; set; }
+        public StatusMessage ActionInvokationStatusEvent { private get; set; }
+        public float ActionEffectValue { private get; set; }
 
         public AutoActionController(MotionEngine motionEngine, DisplayController displayController, StatusEventDispatcher statusEventDispatcher)
         {
@@ -40,6 +42,8 @@ namespace Scripts.All_Characters
             ActionLocationOffset = 0;
             RequiredTargetProximity = new Vector2(Default_Required_Proximity, Default_Required_Proximity);
             Cooldown = Default_Cooldown;
+            ActionInvokationStatusEvent = StatusMessage.ReduceHealth;
+            ActionEffectValue = 1.0f;
         }
 
         public void WireUpEventHandlers()
@@ -72,8 +76,6 @@ namespace Scripts.All_Characters
             if (_isActive)
             {
                 _fieldMovementInProgress = true;
-
-                // TODO: Pause auto action as we are moving towards a point on the field
             }
         }
 
@@ -169,7 +171,7 @@ namespace Scripts.All_Characters
 
         private void InvokeAutoActionEffect()
         {
-
+            _statusEventDispatcher.FireStatusEvent(_actionTarget, ActionInvokationStatusEvent, ActionEffectValue);
         }
 
         private void CompleteAutoAction()

@@ -38,6 +38,8 @@ namespace Scripts.Event_Dispatchers
         StartedFieldMovement,
         CompletedFieldMovement,
         StartedAutoAction,
+        ReduceHealth,
+        IncreaseHealth,
         CompletedAutoAction
     }
 }
