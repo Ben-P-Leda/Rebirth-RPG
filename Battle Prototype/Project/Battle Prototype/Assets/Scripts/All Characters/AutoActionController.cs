@@ -87,6 +87,7 @@ namespace Scripts.All_Characters
                 if ((_actionTarget != null) && (!CloseEnoughToTarget()))
                 {
                     _actionTarget = null;
+                    _displayController.CompleteAutoAction();
                 }
             }
         }

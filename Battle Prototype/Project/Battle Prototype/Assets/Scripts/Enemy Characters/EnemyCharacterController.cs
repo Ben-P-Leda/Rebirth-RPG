@@ -10,22 +10,26 @@ namespace Scripts.Enemy_Characters
 
         private StatusEventDispatcher _statusEventDispatcher;
         private DisplayController _displayController;
+        private HealthManager _healthManager;
 
         public EnemyCharacterController()
             : base()
         {
             _statusEventDispatcher = new StatusEventDispatcher();
             _displayController = new DisplayController();
+
+            _healthManager = new HealthManager(_statusEventDispatcher);
+            _healthManager.MaximumHealth = 5.0f;
         }
 
         private void OnEnable()
         {
-            // TODO: Wire up event handlers
+            _healthManager.WireUpEventHandlers();
         }
 
         private void OnDisable()
         {
-            // TODO: Unhook event handlers
+            _healthManager.UnhookEventHandlers();
         }
         private void Awake()
         {
@@ -33,6 +37,7 @@ namespace Scripts.Enemy_Characters
 
             _statusEventDispatcher.Source = _transform;
             _displayController.Transform = _transform;
+            _healthManager.Transform = _transform;
         }
 
         private void Update()

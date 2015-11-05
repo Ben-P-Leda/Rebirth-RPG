@@ -51,6 +51,7 @@
     <Compile Include="Assets\Scripts\All Characters\DepthController.cs" />
     <Compile Include="Assets\Scripts\All Characters\DisplayController.cs" />
     <Compile Include="Assets\Scripts\All Characters\MotionEngine.cs" />
+    <Compile Include="Assets\Scripts\All Characters\HealthManager.cs" />
     <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
     <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterController.cs" />
     <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />

@@ -15,6 +15,7 @@ namespace Scripts.Player_Characters
         private SelectionHandler _selectionHandler;
         private FieldMovementController _fieldMovementController;
         private AutoActionController _autoActionController;
+        private HealthManager _healthManager;
 
         public PlayerCharacterController() : base()
         {
@@ -23,6 +24,9 @@ namespace Scripts.Player_Characters
             _motionEngine = new MotionEngine();
             _motionEngine.MovementSpeed = 1.0f;
             _displayController = new DisplayController();
+
+            _healthManager = new HealthManager(_statusEventDispatcher);
+            _healthManager.MaximumHealth = 10.0f;
 
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
 
@@ -35,6 +39,7 @@ namespace Scripts.Player_Characters
             _selectionHandler.WireUpEventHandlers();
             _fieldMovementController.WireUpEventHandlers();
             _autoActionController.WireUpEventHandlers();
+            _healthManager.WireUpEventHandlers();
         }
 
         private void OnDisable()
@@ -42,6 +47,7 @@ namespace Scripts.Player_Characters
             _selectionHandler.UnhookEventHandlers();
             _fieldMovementController.UnhookEventHandlers();
             _autoActionController.UnhookEventHandlers();
+            _healthManager.UnhookEventHandlers();
         }
 
         private void Awake()
@@ -54,6 +60,7 @@ namespace Scripts.Player_Characters
             _selectionHandler.Transform = _transform;
             _fieldMovementController.Transform = _transform;
             _autoActionController.Transform = _transform;
+            _healthManager.Transform = _transform;
         }
 
         private void Update()
