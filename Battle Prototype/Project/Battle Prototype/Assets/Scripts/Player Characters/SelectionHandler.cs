@@ -56,14 +56,14 @@ namespace Scripts.Player_Characters
             if (CharacterUtilities.CharacterTargetsAllies(_currentActiveCharacter))
             {
                 Debug.Log(_currentActiveCharacter.name + ": targets FRIENDLIES - setting target to " + Transform.name);
-                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.AlliedActionTargetSelected, 0.0f);
-                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.AlliedActionTargetSelected);
+                _statusEventDispatcher.FireStatusEvent(_currentActiveCharacter, StatusMessage.CharacterDeactivated);
             }
             else
             {
                 Debug.Log(Transform.name + " was set to active");
                 _currentActiveCharacter = Transform;
-                _statusEventDispatcher.FireStatusEvent(Transform, StatusMessage.CharacterActivated, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterActivated);
             }
         }
 
@@ -72,8 +72,8 @@ namespace Scripts.Player_Characters
             if ((!CharacterUtilities.CharacterTargetsAllies(Transform)) && (!CharacterUtilities.CharactersAreAllies(Transform, selection)))
             {
                 Debug.Log(Transform.name + ": targets HOSTILES - setting target to " + selection.name);
-                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.EnemyActionTargetSelected, 0.0f);
-                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.CharacterDeactivated, 0.0f);
+                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.EnemyActionTargetSelected);
+                _statusEventDispatcher.FireStatusEvent(selection, StatusMessage.CharacterDeactivated);
             }
         }
 

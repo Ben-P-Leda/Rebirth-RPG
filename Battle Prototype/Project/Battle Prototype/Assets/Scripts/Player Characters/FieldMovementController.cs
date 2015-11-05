@@ -6,7 +6,9 @@ namespace Scripts.Player_Characters
 {
     public class FieldMovementController
     {
+        private MotionEngine _motionEngine;
         private DisplayController _displayController;
+        private StatusEventDispatcher _statusEventDispatcher;
 
         private Transform _transform;
         private bool _isActive;
@@ -14,13 +16,12 @@ namespace Scripts.Player_Characters
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
-        public Rigidbody2D Rigidbody2D { private get; set; }
 
-        public float MovementSpeed { private get; set; }
-
-        public FieldMovementController(DisplayController displayController)
+        public FieldMovementController(MotionEngine motionEngine, DisplayController displayController, StatusEventDispatcher statusEventDispatcher)
         {
+            _motionEngine = motionEngine;
             _displayController = displayController;
+            _statusEventDispatcher = statusEventDispatcher;
 
             _isActive = false;
             _isMoving = false;
@@ -46,19 +47,20 @@ namespace Scripts.Player_Characters
 
                 if (vectorToTarget.magnitude > Movement_Target_Stopping_Distance)
                 {
-                    Rigidbody2D.velocity = vectorToTarget.normalized * MovementSpeed;
+                    _motionEngine.MoveTowardsPosition(_movementTarget);
                     _displayController.SetFacing(_movementTarget);
                 }
                 else
                 {
-                    StopMoving();
+                    EndFieldMovement();
+                    _statusEventDispatcher.FireStatusEvent(StatusMessage.CompletedFieldMovement);
                 }
             }
         }
 
-        private void StopMoving()
+        private void EndFieldMovement()
         {
-            Rigidbody2D.velocity = Vector3.zero;
+            _motionEngine.StopMoving();
             _isMoving = false;
         }
 
@@ -78,6 +80,7 @@ namespace Scripts.Player_Characters
             if (_isActive)
             {
                 _movementTarget = new Vector3(clickLocation.x, clickLocation.y, _transform.position.z);
+                _statusEventDispatcher.FireStatusEvent(StatusMessage.StartedFieldMovement);
                 _isMoving = true;
             }
         }
@@ -86,7 +89,7 @@ namespace Scripts.Player_Characters
         {
             if (actionExecuter == _transform)
             {
-                StopMoving();
+                EndFieldMovement();
             }
         }
 

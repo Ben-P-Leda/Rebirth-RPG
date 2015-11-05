@@ -9,32 +9,39 @@ namespace Scripts.Player_Characters
         private Transform _transform;
 
         private StatusEventDispatcher _statusEventDispatcher;
+        private MotionEngine _motionEngine;
         private DisplayController _displayController;
 
         private SelectionHandler _selectionHandler;
         private FieldMovementController _fieldMovementController;
+        private AutoActionController _autoActionController;
 
         public PlayerCharacterController() : base()
         {
             _statusEventDispatcher = new StatusEventDispatcher();
+
+            _motionEngine = new MotionEngine();
+            _motionEngine.MovementSpeed = 1.0f;
             _displayController = new DisplayController();
 
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
 
-            _fieldMovementController = new FieldMovementController(_displayController);
-            _fieldMovementController.MovementSpeed = 1.0f;
+            _fieldMovementController = new FieldMovementController(_motionEngine, _displayController, _statusEventDispatcher);
+            _autoActionController = new AutoActionController(_motionEngine, _displayController);
         }
 
         private void OnEnable()
         {
             _selectionHandler.WireUpEventHandlers();
             _fieldMovementController.WireUpEventHandlers();
+            _autoActionController.WireUpEventHandlers();
         }
 
         private void OnDisable()
         {
             _selectionHandler.UnhookEventHandlers();
             _fieldMovementController.UnhookEventHandlers();
+            _autoActionController.UnhookEventHandlers();
         }
 
         private void Awake()
@@ -42,20 +49,22 @@ namespace Scripts.Player_Characters
             _transform = transform;
 
             _statusEventDispatcher.Source = _transform;
+            _motionEngine.Transform = _transform;
             _displayController.Transform = _transform;
             _selectionHandler.Transform = _transform;
             _fieldMovementController.Transform = _transform;
-            _fieldMovementController.Rigidbody2D = _transform.GetComponent<Rigidbody2D>();
+            _autoActionController.Transform = _transform;
         }
 
         private void Update()
         {
             _fieldMovementController.Update();
+            _autoActionController.Update();
         }
 
         public void HandleClickedOn()
         {
-            _statusEventDispatcher.FireStatusEvent(_transform, StatusMessage.CharacterSelected, 0.0f);
+            _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterSelected);
         }
     }
 }

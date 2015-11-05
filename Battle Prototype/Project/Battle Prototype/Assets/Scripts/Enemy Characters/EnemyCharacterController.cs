@@ -41,7 +41,7 @@ namespace Scripts.Enemy_Characters
 
         public void HandleClickedOn()
         {
-            _statusEventDispatcher.FireStatusEvent(_transform, StatusMessage.CharacterSelected, 0.0f);
+            _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterSelected);
         }
     }
 }

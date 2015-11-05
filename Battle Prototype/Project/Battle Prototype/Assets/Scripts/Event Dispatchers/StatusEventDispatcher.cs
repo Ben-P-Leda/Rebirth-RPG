@@ -9,6 +9,16 @@ namespace Scripts.Event_Dispatchers
 
         public Transform Source { private get; set; }
 
+        public void FireStatusEvent(StatusMessage message)
+        {
+            FireStatusEvent(Source, message, 0.0f);
+        }
+
+        public void FireStatusEvent(Transform target, StatusMessage message)
+        {
+            FireStatusEvent(target, message, 0.0f);
+        }
+
         public void FireStatusEvent(Transform target, StatusMessage message, float value)
         {
             if (StatusEventHandler != null) 
@@ -24,6 +34,8 @@ namespace Scripts.Event_Dispatchers
         CharacterActivated,
         CharacterDeactivated,
         AlliedActionTargetSelected,
-        EnemyActionTargetSelected
+        EnemyActionTargetSelected,
+        StartedFieldMovement,
+        CompletedFieldMovement
     }
 }
