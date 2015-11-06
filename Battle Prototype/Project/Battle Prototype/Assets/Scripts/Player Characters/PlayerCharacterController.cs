@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Scripts;
+using Scripts.Data_Models;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
 
@@ -54,6 +56,12 @@ namespace Scripts.Player_Characters
         {
             _transform = transform;
 
+            ConnectComponentsToCharacter();
+            SetCharacterStatistics();
+        }
+
+        private void ConnectComponentsToCharacter()
+        {
             _statusEventDispatcher.Source = _transform;
             _motionEngine.Transform = _transform;
             _displayController.Transform = _transform;
@@ -61,6 +69,21 @@ namespace Scripts.Player_Characters
             _fieldMovementController.Transform = _transform;
             _autoActionController.Transform = _transform;
             _healthManager.Transform = _transform;
+        }
+
+        private void SetCharacterStatistics()
+        {
+            CharacterData stats = CharacterDataProvider.Instance.GetCharacterData(_transform);
+
+            _motionEngine.MovementSpeed = stats.MovementSpeed;
+
+            _healthManager.MaximumHealth = stats.Health;
+
+            _autoActionController.ActionLocationOffset = stats.ActionLocationOffset;
+            _autoActionController.RequiredTargetProximity = stats.RequiredTargetProximity;
+            _autoActionController.Cooldown = stats.AutoActionCooldown;
+            _autoActionController.ActionInvokationStatusEvent = stats.AutoActionEffect;
+            _autoActionController.ActionEffectValue = stats.AutoActionEffectMagnitude;
         }
 
         private void Update()
