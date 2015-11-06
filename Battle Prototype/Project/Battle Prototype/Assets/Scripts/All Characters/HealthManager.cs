@@ -57,6 +57,10 @@ namespace Scripts.All_Characters
                 _displayController.TriggerDeathAnimation();
                 _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterDead);
             }
+            else
+            {
+                _displayController.TriggerHurtAnimation();
+            }
         }
 
         private void HandleHealthGain(float delta)

@@ -29,9 +29,14 @@ namespace Scripts.All_Characters
             _animator.SetBool("AutoAction", false);
         }
 
+        public void TriggerHurtAnimation()
+        {
+            _animator.SetTrigger("Hurt");
+        }
+
         public void TriggerDeathAnimation()
         {
-            _animator.SetBool("Dead", true);
+            _animator.SetTrigger("Death");
         }
     }
 }
