@@ -14,6 +14,10 @@ namespace Scripts.Enemy_Characters
         private MotionEngine _motionEngine;
         private DisplayController _displayController;
         private HealthManager _healthManager;
+        private AutoActionController _autoActionController;
+
+        // This will come out when we get target selection working
+        public GameObject Target;
 
         public EnemyCharacterController()
             : base()
@@ -22,15 +26,18 @@ namespace Scripts.Enemy_Characters
             _displayController = new DisplayController();
             _motionEngine = new MotionEngine();
             _healthManager = new HealthManager(_statusEventDispatcher, _displayController);
+            _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
         }
 
         private void OnEnable()
         {
+            _autoActionController.WireUpEventHandlers();
             _healthManager.WireUpEventHandlers();
         }
 
         private void OnDisable()
         {
+            _autoActionController.UnhookEventHandlers();
             _healthManager.UnhookEventHandlers();
         }
 
@@ -40,6 +47,9 @@ namespace Scripts.Enemy_Characters
 
             ConnectComponentsToCharacter();
             SetCharacterStatistics();
+
+            // TODO: Target selection process
+            _autoActionController._actionTarget = Target.transform;
         }
 
         private void ConnectComponentsToCharacter()
@@ -47,6 +57,7 @@ namespace Scripts.Enemy_Characters
             _statusEventDispatcher.Source = _transform;
             _motionEngine.Transform = _transform;
             _displayController.Transform = _transform;
+            _autoActionController.Transform = _transform;
             _healthManager.Transform = _transform;
         }
 
@@ -58,15 +69,16 @@ namespace Scripts.Enemy_Characters
 
             _healthManager.MaximumHealth = stats.Health;
 
-            //_autoActionController.ActionLocationOffset = stats.ActionLocationOffset;
-            //_autoActionController.RequiredTargetProximity = stats.RequiredTargetProximity;
-            //_autoActionController.Cooldown = stats.AutoActionCooldown;
-            //_autoActionController.ActionInvokationStatusEvent = stats.AutoActionEffect;
-            //_autoActionController.ActionEffectValue = stats.AutoActionEffectMagnitude;
+            _autoActionController.ActionLocationOffset = stats.ActionLocationOffset;
+            _autoActionController.RequiredTargetProximity = stats.RequiredTargetProximity;
+            _autoActionController.Cooldown = stats.AutoActionCooldown;
+            _autoActionController.ActionInvokationStatusEvent = stats.AutoActionEffect;
+            _autoActionController.ActionEffectValue = stats.AutoActionEffectMagnitude;
         }
 
         private void Update()
         {
+            _autoActionController.Update();
         }
 
         public void HandleClickedOn()
