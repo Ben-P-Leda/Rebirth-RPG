@@ -22,16 +22,10 @@ namespace Scripts.Player_Characters
         public PlayerCharacterController() : base()
         {
             _statusEventDispatcher = new StatusEventDispatcher();
-
             _motionEngine = new MotionEngine();
-            _motionEngine.MovementSpeed = 1.0f;
             _displayController = new DisplayController();
-
             _healthManager = new HealthManager(_statusEventDispatcher, _displayController);
-            _healthManager.MaximumHealth = 10.0f;
-
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
-
             _fieldMovementController = new FieldMovementController(_motionEngine, _displayController, _statusEventDispatcher);
             _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
         }

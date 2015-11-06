@@ -13,7 +13,7 @@ namespace Scripts.All_Characters
 
         public void SetFacing(Vector3 target)
         {
-            if (Mathf.Sign(target.x - _transform.position.x) != Mathf.Sign(_transform.localScale.x))
+            if ((Mathf.Sign(target.x - _transform.position.x) != Mathf.Sign(_transform.localScale.x)) && (target.x != _transform.position.x))
             {
                 _transform.localScale = new Vector3(_transform.localScale.x * -1, _transform.localScale.y, _transform.localScale.z);
             }
