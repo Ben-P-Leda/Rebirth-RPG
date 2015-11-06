@@ -46,16 +46,22 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Enemy Characters\ActionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\AnimationEventDispatcher.cs" />
-     <Compile Include="Assets\Scripts\Generic\CharacterActionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\DepthController.cs" />
-     <Compile Include="Assets\Scripts\Generic\HealthBar.cs" />
-     <Compile Include="Assets\Scripts\Generic\SelectionController.cs" />
-     <Compile Include="Assets\Scripts\Generic\StatusEventDispatcher.cs" />
-     <Compile Include="Assets\Scripts\MouseListener.cs" />
-     <Compile Include="Assets\Scripts\Player Characters\ActionController.cs" />
-     <Compile Include="Assets\Scripts\Player Characters\SelectionMarkerToggle.cs" />
+     <Compile Include="Assets\Scripts\All Characters\AutoActionController.cs" />
+     <Compile Include="Assets\Scripts\All Characters\DepthController.cs" />
+     <Compile Include="Assets\Scripts\All Characters\DisplayController.cs" />
+     <Compile Include="Assets\Scripts\All Characters\HealthManager.cs" />
+     <Compile Include="Assets\Scripts\All Characters\MotionEngine.cs" />
+     <Compile Include="Assets\Scripts\CharacterDataProvider.cs" />
+     <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
+     <Compile Include="Assets\Scripts\Data Models\CharacterData.cs" />
+     <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterController.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Player Characters\ActiveStateIndicator.cs" />
+     <Compile Include="Assets\Scripts\Player Characters\FieldMovementController.cs" />
+     <Compile Include="Assets\Scripts\Player Characters\PlayerCharacterController.cs" />
+     <Compile Include="Assets\Scripts\Player Characters\SelectionHandler.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity5/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
