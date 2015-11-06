@@ -13,7 +13,9 @@ namespace Scripts.All_Characters
 
         private bool _isActive;
         private bool _actionInProgress;
+        private bool _actionEffectHasFired;
         private bool _fieldMovementInProgress;
+        private bool _hurtSequenceInProgress;
         private Transform _actionTarget;
         private Vector3 _actionLocation;
         private float _cooldownRemaining;
@@ -34,7 +36,9 @@ namespace Scripts.All_Characters
 
             _isActive = false;
             _actionInProgress = false;
+            _actionEffectHasFired = false;
             _fieldMovementInProgress = false;
+            _hurtSequenceInProgress = false;
             _actionTarget = null;
             _actionLocation = Vector3.zero;
             _cooldownRemaining = 0.0f;
@@ -68,6 +72,7 @@ namespace Scripts.All_Characters
                 case StatusMessage.CompletedFieldMovement: HandleFieldMovementCompletion(target); break;
                 case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target); break;
                 case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator); break;
+                case StatusMessage.ReduceHealth: HandleCharacterHurt(target); break;
                 case StatusMessage.CharacterDead: HandleCharacterDeath(originator); break;
             }
         }
@@ -102,6 +107,15 @@ namespace Scripts.All_Characters
             }
         }
 
+        private void HandleCharacterHurt(Transform hurtCharacter)
+        {
+            if (hurtCharacter == Transform)
+            {
+                Debug.Log(Transform.name + " SET HURT flag");
+                _hurtSequenceInProgress = true;
+            }
+        }
+
         private void HandleCharacterDeath(Transform deadCharacter)
         {
             if (deadCharacter == _actionTarget)
@@ -125,15 +139,22 @@ namespace Scripts.All_Characters
                     _motionEngine.StopMoving();
                     _displayController.IsMoving = false;
 
-                    if (_cooldownRemaining <= 0.0f)
+                    if ((_cooldownRemaining <= 0.0f) && (!_hurtSequenceInProgress))
                     {
                         StartAutoActionSequence();
                     }
                 }
                 else if (!_actionInProgress)
                 {
-                    _motionEngine.MoveTowardsPosition(_actionLocation);
-                    _displayController.IsMoving = true;
+                    if (_hurtSequenceInProgress)
+                    {
+                        _motionEngine.StopMoving();
+                    }
+                    else
+                    {
+                        _motionEngine.MoveTowardsPosition(_actionLocation);
+                        _displayController.IsMoving = true;
+                    }
                 }
             }
 
@@ -163,6 +184,7 @@ namespace Scripts.All_Characters
         private void StartAutoActionSequence()
         {
             _actionInProgress = true;
+            _actionEffectHasFired = false;
             _statusEventDispatcher.FireStatusEvent(StatusMessage.StartedAutoAction);
             _displayController.TriggerAutoAction();
         }
@@ -175,12 +197,14 @@ namespace Scripts.All_Characters
                 {
                     case AnimationEvent.AutoActionEffectOccurs: InvokeAutoActionEffect(); break;
                     case AnimationEvent.AutoActionComplete: CompleteAutoAction(); break;
+                    case AnimationEvent.HurtSequenceComplete: HandleHurtSequenceCompletion(); break;
                 }
             }
         }
 
         private void InvokeAutoActionEffect()
         {
+            _actionEffectHasFired = true;
             _statusEventDispatcher.FireStatusEvent(_actionTarget, ActionInvokationStatusEvent, ActionEffectValue);
         }
 
@@ -190,6 +214,18 @@ namespace Scripts.All_Characters
             _statusEventDispatcher.FireStatusEvent(StatusMessage.CompletedAutoAction);
             _displayController.CompleteAutoAction();
             _cooldownRemaining = Cooldown;
+        }
+
+        private void HandleHurtSequenceCompletion()
+        {
+            Debug.Log(Transform.name + " clear HURT flag");
+
+            _hurtSequenceInProgress = false;
+
+            if ((_actionInProgress) && (_actionEffectHasFired))
+            {
+                CompleteAutoAction();
+            }
         }
 
         private float Default_Cooldown = 2.0f;
