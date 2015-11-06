@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
+using AnimationEvent = Scripts.Event_Dispatchers.AnimationEvent;
 
 namespace Scripts.Player_Characters
 {
@@ -13,7 +14,8 @@ namespace Scripts.Player_Characters
         private Transform _transform;
         private bool _isActive;
         private bool _isMoving;
-        private bool _fieldMovementIsBlocked;
+        private bool _autoActionBlocking;
+        private bool _hurtSequenceBlocking;
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
@@ -26,24 +28,27 @@ namespace Scripts.Player_Characters
 
             _isActive = false;
             _isMoving = false;
-            _fieldMovementIsBlocked = false;
+            _autoActionBlocking = false;
+            _hurtSequenceBlocking = false;
         }
 
         public void WireUpEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
             FieldClickEventDispatcher.FieldClickHandler += HandleFieldClick;
+            AnimationEventDispatcher.AnimationEventHandler += HandleAnimationEvent;
         }
 
         public void UnhookEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
             FieldClickEventDispatcher.FieldClickHandler -= HandleFieldClick;
+            AnimationEventDispatcher.AnimationEventHandler -= HandleAnimationEvent;
         }
 
         public void Update()
         {
-            if (_fieldMovementIsBlocked)
+            if ((_autoActionBlocking) || (_hurtSequenceBlocking))
             {
                 _motionEngine.StopMoving();
             }
@@ -80,8 +85,9 @@ namespace Scripts.Player_Characters
                 case StatusMessage.CharacterDeactivated: _isActive = false; break;
                 case StatusMessage.EnemyActionTargetSelected: AbortMovementIfOwnTargetSpecified(originator, target); break;
                 case StatusMessage.AlliedActionTargetSelected: AbortMovementIfOwnTargetSpecified(target, originator); break;
-                case StatusMessage.StartedAutoAction: BlockMovementIfOwnEvent(target); break;
-                case StatusMessage.CompletedAutoAction: UnblockMovementIfOwnEvent(target); break;
+                case StatusMessage.StartedAutoAction: UpdateAutoActionMoveBlockState(target, true); break;
+                case StatusMessage.CompletedAutoAction: UpdateAutoActionMoveBlockState(target, false); break;
+                case StatusMessage.ReduceHealth: UpdateHurtMoveBlockState(target, true); break;
             }
         }
 
@@ -103,19 +109,27 @@ namespace Scripts.Player_Characters
             }
         }
 
-        private void BlockMovementIfOwnEvent(Transform target)
+        private void UpdateAutoActionMoveBlockState(Transform target, bool block)
         {
             if (_transform == target)
             {
-                _fieldMovementIsBlocked = true;
+                _autoActionBlocking = block;
             }
         }
 
-        private void UnblockMovementIfOwnEvent(Transform target)
+        private void UpdateHurtMoveBlockState(Transform target, bool block)
         {
             if (_transform == target)
             {
-                _fieldMovementIsBlocked = false;
+                _hurtSequenceBlocking = block;
+            }
+        }
+
+        private void HandleAnimationEvent(Transform originator, AnimationEvent message)
+        {
+            if (message == AnimationEvent.HurtSequenceComplete)
+            {
+                UpdateHurtMoveBlockState(originator, false);
             }
         }
 
