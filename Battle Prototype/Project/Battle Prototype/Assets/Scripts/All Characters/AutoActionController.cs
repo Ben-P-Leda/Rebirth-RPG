@@ -15,13 +15,15 @@ namespace Scripts.All_Characters
         private bool _actionInProgress;
         private bool _actionEffectHasFired;
         private bool _fieldMovementInProgress;
-        public Transform _actionTarget;
         private Vector3 _actionLocation;
         private float _cooldownRemaining;
         private float _actionBlockDuration;
 
         public Transform Transform { private get; set; }
         public Rigidbody2D Rigidbody2D { private get; set; }
+        public Transform ActionTarget { private get; set; }
+        public bool HasTarget { get { return ActionTarget != null; } }
+
         public float ActionLocationOffset { private get; set; }
         public Vector2 RequiredTargetProximity { private get; set; }
         public float Cooldown { private get; set; }
@@ -39,7 +41,7 @@ namespace Scripts.All_Characters
             _actionInProgress = false;
             _actionEffectHasFired = false;
             _fieldMovementInProgress = false;
-            _actionTarget = null;
+            ActionTarget = null;
             _actionLocation = Vector3.zero;
             _cooldownRemaining = 0.0f;
             _actionBlockDuration = 0.0f;
@@ -85,9 +87,9 @@ namespace Scripts.All_Characters
             if (characterCompletingMovement == Transform)
             {
                 _fieldMovementInProgress = false;
-                if ((_actionTarget != null) && (!CloseEnoughToTarget()))
+                if ((ActionTarget != null) && (!CloseEnoughToTarget()))
                 {
-                    _actionTarget = null;
+                    ActionTarget = null;
                     _displayController.CompleteAutoAction();
                 }
             }
@@ -97,7 +99,7 @@ namespace Scripts.All_Characters
         {
             if (_isActive)
             {
-                _actionTarget = target;
+                ActionTarget = target;
                 _fieldMovementInProgress = false;
             }
         }
@@ -106,27 +108,26 @@ namespace Scripts.All_Characters
         {
             if (hurtCharacter == Transform)
             {
-                Debug.Log(Transform.name + " SET HURT flag");
                 _actionBlockDuration = Mathf.Max(_actionBlockDuration, 0.5f);
             }
         }
 
         private void HandleCharacterDeath(Transform deadCharacter)
         {
-            if (deadCharacter == _actionTarget)
+            if (deadCharacter == ActionTarget)
             {
-                _actionTarget = null;
+                ActionTarget = null;
             }
         }
 
         public void Update()
         {
-            if ((_actionTarget != null) && (!_fieldMovementInProgress))
+            if ((ActionTarget != null) && (!_fieldMovementInProgress))
             {
                 if (!_actionInProgress)
                 {
                     _actionLocation = CalculateActionLocation();
-                    _displayController.SetFacing(_actionTarget.position);
+                    _displayController.SetFacing(ActionTarget.position);
                 }
 
                 if (CloseEnoughToTarget())
@@ -158,11 +159,11 @@ namespace Scripts.All_Characters
 
         private Vector3 CalculateActionLocation()
         {
-            float x = (Transform.position.x > _actionTarget.position.x)
-                ? _actionTarget.position.x + ActionLocationOffset
-                : _actionTarget.position.x - ActionLocationOffset;
+            float x = (Transform.position.x > ActionTarget.position.x)
+                ? ActionTarget.position.x + ActionLocationOffset
+                : ActionTarget.position.x - ActionLocationOffset;
 
-            return new Vector3(x, _actionTarget.position.y, 0.0f);
+            return new Vector3(x, ActionTarget.position.y, 0.0f);
         }
 
         private bool CloseEnoughToTarget()
@@ -210,7 +211,7 @@ namespace Scripts.All_Characters
         private void InvokeAutoActionEffect()
         {
             _actionEffectHasFired = true;
-            _statusEventDispatcher.FireStatusEvent(_actionTarget, ActionInvokationStatusEvent, ActionEffectValue);
+            _statusEventDispatcher.FireStatusEvent(ActionTarget, ActionInvokationStatusEvent, ActionEffectValue);
         }
 
         private void CompleteAutoAction()

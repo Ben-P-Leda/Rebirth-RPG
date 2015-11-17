@@ -16,9 +16,6 @@ namespace Scripts.Enemy_Characters
         private HealthManager _healthManager;
         private AutoActionController _autoActionController;
 
-        // This will come out when we get target selection working
-        public GameObject Target;
-
         public EnemyCharacterController()
             : base()
         {
@@ -33,12 +30,25 @@ namespace Scripts.Enemy_Characters
         {
             _autoActionController.WireUpEventHandlers();
             _healthManager.WireUpEventHandlers();
+
+            EnemyCharacterTargetSelector.TargetAssignmentHandler += HandleTargetAssignmentResponse;
         }
 
         private void OnDisable()
         {
             _autoActionController.UnhookEventHandlers();
             _healthManager.UnhookEventHandlers();
+
+            EnemyCharacterTargetSelector.TargetAssignmentHandler -= HandleTargetAssignmentResponse;
+        }
+
+        private void HandleTargetAssignmentResponse(Transform originator, Transform target)
+        {
+            if (originator == _transform)
+            {
+                Debug.Log(originator.name + " was assigned " + target.name + " as a target");
+                _autoActionController.ActionTarget = target;
+            }
         }
 
         private void Awake()
@@ -47,9 +57,6 @@ namespace Scripts.Enemy_Characters
 
             ConnectComponentsToCharacter();
             SetCharacterStatistics();
-
-            // TODO: Target selection process
-            _autoActionController._actionTarget = Target.transform;
         }
 
         private void ConnectComponentsToCharacter()
@@ -79,6 +86,10 @@ namespace Scripts.Enemy_Characters
         private void Update()
         {
             _autoActionController.Update();
+            if (!_autoActionController.HasTarget)
+            {
+                _statusEventDispatcher.FireStatusEvent(StatusMessage.NpcActionTargetRequested);
+            }
         }
 
         public void HandleClickedOn()
