@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
-using AnimationEvent = Scripts.Event_Dispatchers.AnimationEvent;
 
 namespace Scripts.Player_Characters
 {
@@ -15,7 +14,7 @@ namespace Scripts.Player_Characters
         private bool _isActive;
         private bool _isMoving;
         private bool _autoActionBlocking;
-        private bool _hurtSequenceBlocking;
+        private float _movementBlockDuration;
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
@@ -29,26 +28,24 @@ namespace Scripts.Player_Characters
             _isActive = false;
             _isMoving = false;
             _autoActionBlocking = false;
-            _hurtSequenceBlocking = false;
+            _movementBlockDuration = 0.0f;
         }
 
         public void WireUpEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
             FieldClickEventDispatcher.FieldClickHandler += HandleFieldClick;
-            AnimationEventDispatcher.AnimationEventHandler += HandleAnimationEvent;
         }
 
         public void UnhookEventHandlers()
         {
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
             FieldClickEventDispatcher.FieldClickHandler -= HandleFieldClick;
-            AnimationEventDispatcher.AnimationEventHandler -= HandleAnimationEvent;
         }
 
         public void Update()
         {
-            if ((_autoActionBlocking) || (_hurtSequenceBlocking))
+            if ((_autoActionBlocking) || (_movementBlockDuration > 0.0f))
             {
                 _motionEngine.StopMoving();
             }
@@ -68,6 +65,8 @@ namespace Scripts.Player_Characters
                     _statusEventDispatcher.FireStatusEvent(StatusMessage.CompletedFieldMovement);
                 }
             }
+
+            _movementBlockDuration = Mathf.Max(_movementBlockDuration - Time.deltaTime, 0.0f);
         }
 
         private void EndFieldMovement()
@@ -87,7 +86,7 @@ namespace Scripts.Player_Characters
                 case StatusMessage.AlliedActionTargetSelected: AbortMovementIfOwnTargetSpecified(target, originator); break;
                 case StatusMessage.StartedAutoAction: UpdateAutoActionMoveBlockState(target, true); break;
                 case StatusMessage.CompletedAutoAction: UpdateAutoActionMoveBlockState(target, false); break;
-                case StatusMessage.ReduceHealth: UpdateHurtMoveBlockState(target, true); break;
+                case StatusMessage.ReduceHealth: SetMoveBlockDuration(target, 0.5f); break;
             }
         }
 
@@ -117,19 +116,11 @@ namespace Scripts.Player_Characters
             }
         }
 
-        private void UpdateHurtMoveBlockState(Transform target, bool block)
+        private void SetMoveBlockDuration(Transform target, float duration)
         {
             if (_transform == target)
             {
-                _hurtSequenceBlocking = block;
-            }
-        }
-
-        private void HandleAnimationEvent(Transform originator, AnimationEvent message)
-        {
-            if (message == AnimationEvent.HurtSequenceComplete)
-            {
-                UpdateHurtMoveBlockState(originator, false);
+                _movementBlockDuration = Mathf.Max(_movementBlockDuration, duration);
             }
         }
 

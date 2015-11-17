@@ -24,7 +24,6 @@ namespace Scripts.Event_Dispatchers
     {
         AutoActionEffectOccurs,
         AutoActionComplete,
-        HurtSequenceComplete,
         DeathSequenceComplete
     }
 }
