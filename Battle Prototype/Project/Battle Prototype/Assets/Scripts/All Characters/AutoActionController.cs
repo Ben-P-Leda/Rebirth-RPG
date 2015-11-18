@@ -14,15 +14,16 @@ namespace Scripts.All_Characters
         private bool _isActive;
         private bool _actionInProgress;
         private bool _actionEffectHasFired;
-        private bool _fieldMovementInProgress;
         private Vector3 _actionLocation;
         private float _cooldownRemaining;
+        private bool _autoActionDisabled;
         private float _actionBlockDuration;
 
         public Transform Transform { private get; set; }
         public Rigidbody2D Rigidbody2D { private get; set; }
         public Transform ActionTarget { private get; set; }
         public bool HasTarget { get { return ActionTarget != null; } }
+        public bool AutoActionDisabled { set { SetAutoActionDisabledState(value); } }
 
         public float ActionLocationOffset { private get; set; }
         public Vector2 RequiredTargetProximity { private get; set; }
@@ -40,11 +41,22 @@ namespace Scripts.All_Characters
             _isActive = false;
             _actionInProgress = false;
             _actionEffectHasFired = false;
-            _fieldMovementInProgress = false;
+            _autoActionDisabled = false;
             ActionTarget = null;
             _actionLocation = Vector3.zero;
             _cooldownRemaining = 0.0f;
             _actionBlockDuration = 0.0f;
+        }
+
+        private void SetAutoActionDisabledState(bool isDisabled)
+        {
+            _autoActionDisabled = isDisabled;
+
+            if ((!isDisabled) && (ActionTarget != null) && (!CloseEnoughToTarget()))
+            {
+                ActionTarget = null;
+                _displayController.CompleteAutoAction();
+            }
         }
 
         public void WireUpEventHandlers()
@@ -65,33 +77,10 @@ namespace Scripts.All_Characters
             {
                 case StatusMessage.CharacterActivated: _isActive = (Transform == target); break;
                 case StatusMessage.CharacterDeactivated: _isActive = false; break;
-                case StatusMessage.StartedFieldMovement: HandleFieldMovementStart(); break;
-                case StatusMessage.CompletedFieldMovement: HandleFieldMovementCompletion(target); break;
                 case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target); break;
                 case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator); break;
                 case StatusMessage.ReduceHealth: HandleCharacterHurt(target); break;
                 case StatusMessage.CharacterDead: HandleCharacterDeath(originator); break;
-            }
-        }
-
-        private void HandleFieldMovementStart()
-        {
-            if (_isActive)
-            {
-                _fieldMovementInProgress = true;
-            }
-        }
-
-        private void HandleFieldMovementCompletion(Transform characterCompletingMovement)
-        {
-            if (characterCompletingMovement == Transform)
-            {
-                _fieldMovementInProgress = false;
-                if ((ActionTarget != null) && (!CloseEnoughToTarget()))
-                {
-                    ActionTarget = null;
-                    _displayController.CompleteAutoAction();
-                }
             }
         }
 
@@ -100,7 +89,7 @@ namespace Scripts.All_Characters
             if (_isActive)
             {
                 ActionTarget = target;
-                _fieldMovementInProgress = false;
+                _autoActionDisabled = false;
             }
         }
 
@@ -122,7 +111,7 @@ namespace Scripts.All_Characters
 
         public void Update()
         {
-            if ((ActionTarget != null) && (!_fieldMovementInProgress))
+            if ((ActionTarget != null) && (!_autoActionDisabled))
             {
                 if (!_actionInProgress)
                 {
