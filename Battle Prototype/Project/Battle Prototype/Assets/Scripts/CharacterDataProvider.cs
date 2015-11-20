@@ -76,6 +76,15 @@ namespace Scripts
             }
         }
 
+        public NpcData GetNpcData(Transform characterTransform)
+        {
+            NpcData npcData = new NpcData()
+            {
+                DirectAttackThreatModifier = 1.2f,
+                PcHealingThreatModifier = 0.5f
+            };
 
+            return npcData;
+        }
     }
 }
