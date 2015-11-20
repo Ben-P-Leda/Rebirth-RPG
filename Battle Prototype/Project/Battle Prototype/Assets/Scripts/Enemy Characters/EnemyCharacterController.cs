@@ -25,7 +25,7 @@ namespace Scripts.Enemy_Characters
             _motionEngine = new MotionEngine();
             _healthManager = new HealthManager(_statusEventDispatcher, _displayController);
             _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
-            _threatReactionManager = new ThreatReactionManager();
+            _threatReactionManager = new ThreatReactionManager(_autoActionController);
         }
 
         private void OnEnable()
@@ -60,6 +60,7 @@ namespace Scripts.Enemy_Characters
 
             ConnectComponentsToCharacter();
             SetCharacterStatistics();
+            SetNpcStatistics();
         }
 
         private void ConnectComponentsToCharacter()
@@ -85,6 +86,14 @@ namespace Scripts.Enemy_Characters
             _autoActionController.Cooldown = stats.AutoActionCooldown;
             _autoActionController.ActionInvokationStatusEvent = stats.AutoActionEffect;
             _autoActionController.ActionEffectValue = stats.AutoActionEffectMagnitude;
+        }
+
+        private void SetNpcStatistics()
+        {
+            NpcData stats = CharacterDataProvider.Instance.GetNpcData(_transform);
+
+            _threatReactionManager.DirectAttackThreatModifier = stats.DirectAttackThreatModifier;
+            _threatReactionManager.PcHealingThreatModifier = stats.PcHealingThreatModifier;
         }
 
         private void Update()

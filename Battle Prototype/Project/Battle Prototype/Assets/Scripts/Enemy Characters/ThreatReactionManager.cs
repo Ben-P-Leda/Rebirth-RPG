@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Scripts.All_Characters;
 using Scripts.Event_Dispatchers;
 
 namespace Scripts.Enemy_Characters
@@ -9,22 +10,40 @@ namespace Scripts.Enemy_Characters
         private Transform _transform;
         private string _faction;
         private Dictionary<Transform, float> _threatValues;
+        private Transform _currentTarget;
+        private AutoActionController _autoActionController;
+
+        public float DirectAttackThreatModifier { private get; set; }
+        public float PcHealingThreatModifier { private get; set; }
 
         public Transform Transform { set { _transform = value; _faction = CharacterUtilities.GetFaction(value); } }
 
-        public ThreatReactionManager()
+        public ThreatReactionManager(AutoActionController autoActionController)
         {
             _threatValues = new Dictionary<Transform, float>();
+            _currentTarget = null;
+
+            _autoActionController = autoActionController;
         }
 
         public void WireUpEventHandlers()
         {
+            EnemyCharacterTargetSelector.TargetAssignmentHandler += HandleTargetAssignmentResponse;
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
         }
 
         public void UnhookEventHandlers()
         {
+            EnemyCharacterTargetSelector.TargetAssignmentHandler -= HandleTargetAssignmentResponse;
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
+        }
+
+        private void HandleTargetAssignmentResponse(Transform originator, Transform target)
+        {
+            if (originator == _transform)
+            {
+                _currentTarget = target;
+            }
         }
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
@@ -40,7 +59,7 @@ namespace Scripts.Enemy_Characters
         {
             if (attackTarget == _transform)
             {
-                UpdateThreat(attacker, damageValue);
+                UpdateThreat(attacker, damageValue * DirectAttackThreatModifier);
             }
         }
 
@@ -48,7 +67,7 @@ namespace Scripts.Enemy_Characters
         {
             if (CharacterUtilities.GetFaction(healer) != _faction)
             {
-                UpdateThreat(healer, healingValue);
+                UpdateThreat(healer, healingValue * PcHealingThreatModifier);
             }
         }
 
@@ -64,6 +83,32 @@ namespace Scripts.Enemy_Characters
             {
                 _threatValues[threatSource] += threatValue;
             }
+
+            Transform greatestThreat = GetGreatestThreat();
+            if (greatestThreat != _currentTarget)
+            {
+                _currentTarget = greatestThreat;
+                _autoActionController.AssignTarget(greatestThreat);
+
+                Debug.Log(string.Format("{0} switched target to greatest threat {1}", _transform.name, _currentTarget.name));
+            }
+        }
+
+        private Transform GetGreatestThreat()
+        {
+            Transform greatestThreat = null;
+            float highestThreatValue = 0.0f;
+
+            foreach (KeyValuePair<Transform, float> kvp in _threatValues)
+            {
+                if (kvp.Value > highestThreatValue)
+                {
+                    greatestThreat = kvp.Key;
+                    highestThreatValue = kvp.Value;
+                }
+            }
+
+            return greatestThreat;
         }
     }
 }
