@@ -46,8 +46,7 @@ namespace Scripts.Enemy_Characters
         {
             if (originator == _transform)
             {
-                Debug.Log(originator.name + " was assigned " + target.name + " as a target");
-                _autoActionController.ActionTarget = target;
+                _autoActionController.AssignTarget(target);
             }
         }
 

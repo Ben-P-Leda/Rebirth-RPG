@@ -9,6 +9,7 @@ namespace Scripts.Player_Characters
     public class PlayerCharacterController : MonoBehaviour
     {
         private Transform _transform;
+        public bool _isActive;
 
         private StatusEventDispatcher _statusEventDispatcher;
         private MotionEngine _motionEngine;
@@ -21,6 +22,8 @@ namespace Scripts.Player_Characters
 
         public PlayerCharacterController() : base()
         {
+            _isActive = false;
+
             _statusEventDispatcher = new StatusEventDispatcher();
             _motionEngine = new MotionEngine();
             _displayController = new DisplayController();
@@ -36,6 +39,8 @@ namespace Scripts.Player_Characters
             _fieldMovementController.WireUpEventHandlers();
             _autoActionController.WireUpEventHandlers();
             _healthManager.WireUpEventHandlers();
+
+            StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
         }
 
         private void OnDisable()
@@ -44,6 +49,45 @@ namespace Scripts.Player_Characters
             _fieldMovementController.UnhookEventHandlers();
             _autoActionController.UnhookEventHandlers();
             _healthManager.UnhookEventHandlers();
+
+            StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
+        }
+
+        private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
+        {
+            switch (message)
+            {
+                case StatusMessage.CharacterActivated: _isActive = (_transform == target); break;
+                case StatusMessage.CharacterDeactivated: _isActive = false; break;
+                case StatusMessage.StartedFieldMovement: HandleFieldMovementStart(); break;
+                case StatusMessage.CompletedFieldMovement: HandleFieldMovementCompletion(target); break;
+                case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target, originator); break;
+                case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator, target); break;
+            }
+        }
+
+        private void HandleFieldMovementStart()
+        {
+            if (_isActive)
+            {
+                _autoActionController.AutoActionDisabled = true;
+            }
+        }
+
+        private void HandleFieldMovementCompletion(Transform characterCompletingMovement)
+        {
+            if (characterCompletingMovement == _transform)
+            {
+                _autoActionController.AutoActionDisabled = false;
+            }
+        }
+
+        private void HandleActionTargetAssignment(Transform target, Transform assignTo)
+        {
+            if (assignTo == _transform)
+            {
+                _autoActionController.AssignTarget(target);
+            }
         }
 
         private void Awake()
