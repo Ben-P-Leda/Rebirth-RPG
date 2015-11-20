@@ -61,6 +61,8 @@ namespace Scripts.Player_Characters
                 case StatusMessage.CharacterDeactivated: _isActive = false; break;
                 case StatusMessage.StartedFieldMovement: HandleFieldMovementStart(); break;
                 case StatusMessage.CompletedFieldMovement: HandleFieldMovementCompletion(target); break;
+                case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target, originator); break;
+                case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator, target); break;
             }
         }
 
@@ -77,6 +79,14 @@ namespace Scripts.Player_Characters
             if (characterCompletingMovement == _transform)
             {
                 _autoActionController.AutoActionDisabled = false;
+            }
+        }
+
+        private void HandleActionTargetAssignment(Transform target, Transform assignTo)
+        {
+            if (assignTo == _transform)
+            {
+                _autoActionController.AssignTarget(target);
             }
         }
 

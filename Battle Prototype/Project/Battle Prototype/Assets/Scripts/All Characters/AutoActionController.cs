@@ -11,8 +11,8 @@ namespace Scripts.All_Characters
         private DisplayController _displayController;
         private StatusEventDispatcher _statusEventDispatcher;
 
-        private bool _isActive;
-        private bool _actionInProgress;
+        private Transform _actionTarget;
+        public bool _actionInProgress;
         private bool _actionEffectHasFired;
         private Vector3 _actionLocation;
         private float _cooldownRemaining;
@@ -21,8 +21,7 @@ namespace Scripts.All_Characters
 
         public Transform Transform { private get; set; }
         public Rigidbody2D Rigidbody2D { private get; set; }
-        public Transform ActionTarget { private get; set; }
-        public bool HasTarget { get { return ActionTarget != null; } }
+        public bool HasTarget { get { return _actionTarget != null; } }
         public bool AutoActionDisabled { set { SetAutoActionDisabledState(value); } }
 
         public float ActionLocationOffset { private get; set; }
@@ -38,11 +37,10 @@ namespace Scripts.All_Characters
             _displayController = displayController;
             _statusEventDispatcher = statusEventDispatcher;
 
-            _isActive = false;
             _actionInProgress = false;
             _actionEffectHasFired = false;
             _autoActionDisabled = false;
-            ActionTarget = null;
+            _actionTarget = null;
             _actionLocation = Vector3.zero;
             _cooldownRemaining = 0.0f;
             _actionBlockDuration = 0.0f;
@@ -52,9 +50,9 @@ namespace Scripts.All_Characters
         {
             _autoActionDisabled = isDisabled;
 
-            if ((!isDisabled) && (ActionTarget != null) && (!CloseEnoughToTarget()))
+            if ((!isDisabled) && (_actionTarget != null) && (!CloseEnoughToTarget()))
             {
-                ActionTarget = null;
+                _actionTarget = null;
                 _displayController.CompleteAutoAction();
             }
         }
@@ -75,21 +73,8 @@ namespace Scripts.All_Characters
         {
             switch (message)
             {
-                case StatusMessage.CharacterActivated: _isActive = (Transform == target); break;
-                case StatusMessage.CharacterDeactivated: _isActive = false; break;
-                case StatusMessage.EnemyActionTargetSelected: HandleActionTargetAssignment(target); break;
-                case StatusMessage.AlliedActionTargetSelected: HandleActionTargetAssignment(originator); break;
                 case StatusMessage.ReduceHealth: HandleCharacterHurt(target); break;
                 case StatusMessage.CharacterDead: HandleCharacterDeath(originator); break;
-            }
-        }
-
-        private void HandleActionTargetAssignment(Transform target)
-        {
-            if (_isActive)
-            {
-                ActionTarget = target;
-                _autoActionDisabled = false;
             }
         }
 
@@ -103,20 +88,20 @@ namespace Scripts.All_Characters
 
         private void HandleCharacterDeath(Transform deadCharacter)
         {
-            if (deadCharacter == ActionTarget)
+            if (deadCharacter == _actionTarget)
             {
-                ActionTarget = null;
+                _actionTarget = null;
             }
         }
 
         public void Update()
         {
-            if ((ActionTarget != null) && (!_autoActionDisabled))
+            if ((_actionTarget != null) && (!_autoActionDisabled))
             {
                 if (!_actionInProgress)
                 {
                     _actionLocation = CalculateActionLocation();
-                    _displayController.SetFacing(ActionTarget.position);
+                    _displayController.SetFacing(_actionTarget.position);
                 }
 
                 if (CloseEnoughToTarget())
@@ -148,11 +133,11 @@ namespace Scripts.All_Characters
 
         private Vector3 CalculateActionLocation()
         {
-            float x = (Transform.position.x > ActionTarget.position.x)
-                ? ActionTarget.position.x + ActionLocationOffset
-                : ActionTarget.position.x - ActionLocationOffset;
+            float x = (Transform.position.x > _actionTarget.position.x)
+                ? _actionTarget.position.x + ActionLocationOffset
+                : _actionTarget.position.x - ActionLocationOffset;
 
-            return new Vector3(x, ActionTarget.position.y, 0.0f);
+            return new Vector3(x, _actionTarget.position.y, 0.0f);
         }
 
         private bool CloseEnoughToTarget()
@@ -200,7 +185,7 @@ namespace Scripts.All_Characters
         private void InvokeAutoActionEffect()
         {
             _actionEffectHasFired = true;
-            _statusEventDispatcher.FireStatusEvent(ActionTarget, ActionInvokationStatusEvent, ActionEffectValue);
+            _statusEventDispatcher.FireStatusEvent(_actionTarget, ActionInvokationStatusEvent, ActionEffectValue);
         }
 
         private void CompleteAutoAction()
@@ -209,6 +194,14 @@ namespace Scripts.All_Characters
             _statusEventDispatcher.FireStatusEvent(StatusMessage.CompletedAutoAction);
             _displayController.CompleteAutoAction();
             _cooldownRemaining = Cooldown;
+        }
+
+        public void AssignTarget(Transform target)
+        {
+            Debug.Log(Transform.name + " was assigned " + target.name + " as a target");
+
+            _autoActionDisabled = false;
+            _actionTarget = target;
         }
     }
 }
