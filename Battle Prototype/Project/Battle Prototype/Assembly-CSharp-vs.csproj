@@ -56,6 +56,7 @@
      <Compile Include="Assets\Scripts\Data Models\CharacterData.cs" />
      <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterController.cs" />
      <Compile Include="Assets\Scripts\Enemy Characters\EnemyCharacterTargetSelector.cs" />
+     <Compile Include="Assets\Scripts\Enemy Characters\ThreatReactionManager.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
