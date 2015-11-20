@@ -13,6 +13,7 @@ namespace Scripts.All_Characters
         private Transform _barTransform;
         private float _currentHealth;
         private float _maximumHealth;
+        private bool _actionInProgress;
 
         public float MaximumHealth { set { _maximumHealth = value; _currentHealth = value; } }
 
@@ -42,9 +43,19 @@ namespace Scripts.All_Characters
             {
                 switch (message)
                 {
+                    case StatusMessage.StartedAutoAction: SetActionInProgressFlag(originator, true); break;
+                    case StatusMessage.CompletedAutoAction: SetActionInProgressFlag(originator, false); break;
                     case StatusMessage.ReduceHealth: HandleHealthLoss(value); break;
                     case StatusMessage.IncreaseHealth: HandleHealthGain(value); break;
                 }
+            }
+        }
+
+        private void SetActionInProgressFlag(Transform originator, bool actionRunning)
+        {
+            if (originator = _transform)
+            {
+                _actionInProgress = actionRunning;
             }
         }
 
@@ -57,7 +68,7 @@ namespace Scripts.All_Characters
                 _displayController.TriggerDeathAnimation();
                 _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterDead);
             }
-            else
+            else if (!_actionInProgress)
             {
                 _displayController.TriggerHurtAnimation();
             }
