@@ -61,10 +61,13 @@
      <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\UIEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Player Characters\ActiveStateIndicator.cs" />
      <Compile Include="Assets\Scripts\Player Characters\FieldMovementController.cs" />
      <Compile Include="Assets\Scripts\Player Characters\PlayerCharacterController.cs" />
      <Compile Include="Assets\Scripts\Player Characters\SelectionHandler.cs" />
+     <Compile Include="Assets\Scripts\UI\SceneMovementButton.cs" />
+     <Compile Include="Assets\Scripts\UI\UIUtilities.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity5/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
