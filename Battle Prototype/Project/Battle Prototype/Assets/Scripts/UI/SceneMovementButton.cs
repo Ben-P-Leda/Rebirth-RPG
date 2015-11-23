@@ -10,17 +10,17 @@ namespace Scripts.UI
         private bool _held;
         private string _buttonName;
 
+        private UIEventDispatcher _uiEventDispatcher;
+
         public int MovementStep;
         public Texture2D Texture;
-
-        public UIEventDispatcher UIEventDispatcher { private get; set; }
 
         public SceneMovementButton()
         {
             _held = false;
             _buttonName = "";
 
-            UIEventDispatcher = null;
+            _uiEventDispatcher = new UIEventDispatcher();
         }
 
         private void Awake()
@@ -47,11 +47,13 @@ namespace Scripts.UI
             if (wasHeld != _held)
             {
                 Debug.Log(string.Format("Button {0} held state updated to {1}", _buttonName, _held));
-                if (UIEventDispatcher != null)
+                if (_uiEventDispatcher != null)
                 {
-                    UIEventDispatcher.FireUIButtonEvent(_buttonName, _held);
+                    _uiEventDispatcher.FireUIButtonEvent(_buttonName, _held);
                 }
             }
         }
+
+        public const string Movement_Buttons = "MoveLeftButton,MoveRightButton";
     }
 }

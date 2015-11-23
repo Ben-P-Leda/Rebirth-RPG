@@ -12,12 +12,14 @@ namespace Scripts.Player_Characters
 
         private Transform _transform;
         private bool _isActive;
+        private bool _movementFrozen;
         private bool _isMoving;
         private bool _autoActionBlocking;
         private float _movementBlockDuration;
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
+        public bool IgnoreFieldClickEvents { set { _movementFrozen = value; EndFieldMovement(); } }
 
         public FieldMovementController(MotionEngine motionEngine, DisplayController displayController, StatusEventDispatcher statusEventDispatcher)
         {
@@ -26,6 +28,7 @@ namespace Scripts.Player_Characters
             _statusEventDispatcher = statusEventDispatcher;
 
             _isActive = false;
+            _movementFrozen = false;
             _isMoving = false;
             _autoActionBlocking = false;
             _movementBlockDuration = 0.0f;
@@ -92,7 +95,7 @@ namespace Scripts.Player_Characters
 
         private void HandleFieldClick(Vector3 clickLocation)
         {
-            if (_isActive)
+            if ((!_movementFrozen) && (_isActive))
             {
                 _movementTarget = new Vector3(clickLocation.x, clickLocation.y, _transform.position.z);
                 _statusEventDispatcher.FireStatusEvent(StatusMessage.StartedFieldMovement);

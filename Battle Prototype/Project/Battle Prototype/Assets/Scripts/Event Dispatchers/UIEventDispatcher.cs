@@ -2,7 +2,7 @@
 
 namespace Scripts.Event_Dispatchers
 {
-    public class UIEventDispatcher : MonoBehaviour
+    public class UIEventDispatcher
     {
         public delegate void HandleButtonEvent(string buttonName, bool isPressed);
         public static event HandleButtonEvent ButtonEventHandler;
