@@ -154,6 +154,10 @@ namespace Scripts.Player_Characters
             {
                 _blockAction = isPressed;
                 _fieldMovementController.IgnoreFieldClickEvents = isPressed;
+                if (!CharacterUtilities.CharacterTargetsAllies(_transform))
+                {
+                    _autoActionController.AutoActionDisabled = true;
+                }
             }
         }
     }

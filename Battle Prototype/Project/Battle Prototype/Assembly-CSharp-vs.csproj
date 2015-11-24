@@ -61,6 +61,7 @@
      <Compile Include="Assets\Scripts\Environment\StageProgressController.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\AnimationEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\FieldClickEventDispatcher.cs" />
+     <Compile Include="Assets\Scripts\Event Dispatchers\FieldLimitEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\StatusEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Event Dispatchers\UIEventDispatcher.cs" />
      <Compile Include="Assets\Scripts\Player Characters\ActiveStateIndicator.cs" />
