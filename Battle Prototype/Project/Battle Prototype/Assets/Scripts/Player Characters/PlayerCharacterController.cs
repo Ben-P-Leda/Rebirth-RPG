@@ -136,7 +136,6 @@ namespace Scripts.Player_Characters
 
         private void Update()
         {
-
             if (!_blockAction)
             {
                 _fieldMovementController.Update();

@@ -19,7 +19,7 @@ namespace Scripts.Player_Characters
         private Vector3 _movementTarget;
 
         public Transform Transform { set { _transform = value; _movementTarget = value.position; } }
-        public bool IgnoreFieldClickEvents { set { _movementFrozen = value; EndFieldMovement(); } }
+        public bool IgnoreFieldClickEvents { set { _movementFrozen = value; _isMoving = false; } }
 
         public FieldMovementController(MotionEngine motionEngine, DisplayController displayController, StatusEventDispatcher statusEventDispatcher)
         {
