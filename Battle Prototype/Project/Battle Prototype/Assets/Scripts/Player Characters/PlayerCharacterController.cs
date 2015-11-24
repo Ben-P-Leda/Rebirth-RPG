@@ -21,6 +21,7 @@ namespace Scripts.Player_Characters
         private FieldMovementController _fieldMovementController;
         private AutoActionController _autoActionController;
         private HealthManager _healthManager;
+        private StageMotionEngine _stageMotionEngine;
 
         public PlayerCharacterController() : base()
         {
@@ -34,6 +35,7 @@ namespace Scripts.Player_Characters
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
             _fieldMovementController = new FieldMovementController(_motionEngine, _displayController, _statusEventDispatcher);
             _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
+            _stageMotionEngine = new StageMotionEngine(_displayController);
         }
 
         private void OnEnable()
@@ -42,6 +44,7 @@ namespace Scripts.Player_Characters
             _fieldMovementController.WireUpEventHandlers();
             _autoActionController.WireUpEventHandlers();
             _healthManager.WireUpEventHandlers();
+            _stageMotionEngine.WireUpEventHandlers();
 
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
             UIEventDispatcher.ButtonEventHandler += HandleButtonEvent;
@@ -53,6 +56,7 @@ namespace Scripts.Player_Characters
             _fieldMovementController.UnhookEventHandlers();
             _autoActionController.UnhookEventHandlers();
             _healthManager.UnhookEventHandlers();
+            _stageMotionEngine.UnhookEventHandlers();
 
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
             UIEventDispatcher.ButtonEventHandler -= HandleButtonEvent;
@@ -112,6 +116,7 @@ namespace Scripts.Player_Characters
             _fieldMovementController.Transform = _transform;
             _autoActionController.Transform = _transform;
             _healthManager.Transform = _transform;
+            _stageMotionEngine.Transform = _transform;
         }
 
         private void SetCharacterStatistics()

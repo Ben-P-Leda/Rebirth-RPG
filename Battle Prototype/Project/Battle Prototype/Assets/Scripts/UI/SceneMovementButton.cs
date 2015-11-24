@@ -8,6 +8,7 @@ namespace Scripts.UI
     {
         private Rect _displayArea;
         private bool _held;
+        private bool _wasHeld;
         private string _buttonName;
 
         private UIEventDispatcher _uiEventDispatcher;
@@ -18,6 +19,7 @@ namespace Scripts.UI
         public SceneMovementButton()
         {
             _held = false;
+            _wasHeld = false;
             _buttonName = "";
 
             _uiEventDispatcher = new UIEventDispatcher();
@@ -41,17 +43,28 @@ namespace Scripts.UI
 
         private void OnGUI()
         {
-            bool wasHeld = _held;
-            _held = GUI.RepeatButton(_displayArea, Texture);
-
-            if (wasHeld != _held)
+            if ((GUI.RepeatButton(_displayArea, Texture)) && (!_held))
             {
-                Debug.Log(string.Format("Button {0} held state updated to {1}", _buttonName, _held));
-                if (_uiEventDispatcher != null)
+                _held = true;
+
+                if (!_wasHeld)
                 {
-                    _uiEventDispatcher.FireUIButtonEvent(_buttonName, _held);
+                    Debug.Log(string.Format("Button {0} PRESSED", _buttonName));
+                    _uiEventDispatcher.FireUIButtonEvent(_buttonName, true);
                 }
             }
+        }
+
+        private void Update()
+        {
+            if ((_wasHeld) && (!_held))
+            {
+                Debug.Log(string.Format("Button {0} RELEASED", _buttonName));
+                _uiEventDispatcher.FireUIButtonEvent(_buttonName, false);
+            }
+
+            _wasHeld = _held;
+            _held = false;
         }
 
         public const string Movement_Buttons = "MoveLeftButton,MoveRightButton";
