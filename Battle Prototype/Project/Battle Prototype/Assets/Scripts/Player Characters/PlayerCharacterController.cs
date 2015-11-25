@@ -3,13 +3,15 @@ using Scripts;
 using Scripts.Data_Models;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
+using Scripts.UI;
 
 namespace Scripts.Player_Characters
 {
     public class PlayerCharacterController : MonoBehaviour
     {
         private Transform _transform;
-        public bool _isActive;
+        private bool _isActive;
+        private bool _blockAction;
 
         private StatusEventDispatcher _statusEventDispatcher;
         private MotionEngine _motionEngine;
@@ -19,10 +21,12 @@ namespace Scripts.Player_Characters
         private FieldMovementController _fieldMovementController;
         private AutoActionController _autoActionController;
         private HealthManager _healthManager;
+        private StageMotionEngine _stageMotionEngine;
 
         public PlayerCharacterController() : base()
         {
             _isActive = false;
+            _blockAction = false;
 
             _statusEventDispatcher = new StatusEventDispatcher();
             _motionEngine = new MotionEngine();
@@ -31,6 +35,7 @@ namespace Scripts.Player_Characters
             _selectionHandler = new SelectionHandler(_statusEventDispatcher);
             _fieldMovementController = new FieldMovementController(_motionEngine, _displayController, _statusEventDispatcher);
             _autoActionController = new AutoActionController(_motionEngine, _displayController, _statusEventDispatcher);
+            _stageMotionEngine = new StageMotionEngine(_displayController);
         }
 
         private void OnEnable()
@@ -39,8 +44,10 @@ namespace Scripts.Player_Characters
             _fieldMovementController.WireUpEventHandlers();
             _autoActionController.WireUpEventHandlers();
             _healthManager.WireUpEventHandlers();
+            _stageMotionEngine.WireUpEventHandlers();
 
             StatusEventDispatcher.StatusEventHandler += HandleStatusEvent;
+            UIEventDispatcher.ButtonEventHandler += HandleButtonEvent;
         }
 
         private void OnDisable()
@@ -49,8 +56,10 @@ namespace Scripts.Player_Characters
             _fieldMovementController.UnhookEventHandlers();
             _autoActionController.UnhookEventHandlers();
             _healthManager.UnhookEventHandlers();
+            _stageMotionEngine.UnhookEventHandlers();
 
             StatusEventDispatcher.StatusEventHandler -= HandleStatusEvent;
+            UIEventDispatcher.ButtonEventHandler -= HandleButtonEvent;
         }
 
         private void HandleStatusEvent(Transform originator, Transform target, StatusMessage message, float value)
@@ -107,6 +116,7 @@ namespace Scripts.Player_Characters
             _fieldMovementController.Transform = _transform;
             _autoActionController.Transform = _transform;
             _healthManager.Transform = _transform;
+            _stageMotionEngine.Transform = _transform;
         }
 
         private void SetCharacterStatistics()
@@ -126,13 +136,29 @@ namespace Scripts.Player_Characters
 
         private void Update()
         {
-            _fieldMovementController.Update();
-            _autoActionController.Update();
+            if (!_blockAction)
+            {
+                _fieldMovementController.Update();
+                _autoActionController.Update();
+            }
         }
 
         public void HandleClickedOn()
         {
             _statusEventDispatcher.FireStatusEvent(StatusMessage.CharacterSelected);
+        }
+
+        private void HandleButtonEvent(string buttonName, bool isPressed)
+        {
+            if (SceneMovementButton.Movement_Buttons.Contains(buttonName))
+            {
+                _blockAction = isPressed;
+                _fieldMovementController.IgnoreFieldClickEvents = isPressed;
+                if (!CharacterUtilities.CharacterTargetsAllies(_transform))
+                {
+                    _autoActionController.AutoActionDisabled = true;
+                }
+            }
         }
     }
 }
