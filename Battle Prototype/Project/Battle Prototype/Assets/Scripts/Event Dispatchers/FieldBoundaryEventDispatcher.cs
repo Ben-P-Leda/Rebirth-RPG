@@ -10,8 +10,6 @@ namespace Scripts.Event_Dispatchers
 
         public void FireFieldBoundaryUpdateEvent(Direction side, bool atBoundary)
         {
-            Debug.Log("BOUNDARY EVENT: " + side.ToString() + " " + atBoundary.ToString());
-
             if (FieldBoundaryUpdateEventHandler != null) { FieldBoundaryUpdateEventHandler(side, atBoundary); }
         }
     }

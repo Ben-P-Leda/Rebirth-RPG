@@ -32,12 +32,6 @@ namespace Scripts.Environment
             UIEventDispatcher.ButtonEventHandler -= HandleButtonEvent;
         }
 
-        private void Awake()
-        {
-            _transform = transform;
-            _rigidBody2D = _transform.GetComponent<Rigidbody2D>();
-        }
-
         private void HandleButtonEvent(string buttonName, bool isPressed)
         {
             _movementDirection = 0;
@@ -50,6 +44,12 @@ namespace Scripts.Environment
                     case "MoveRightButton": _movementDirection = 1; break;
                 }
             }
+        }
+
+        private void Awake()
+        {
+            _transform = transform;
+            _rigidBody2D = _transform.GetComponent<Rigidbody2D>();
         }
 
         private void FixedUpdate()
@@ -93,7 +93,7 @@ namespace Scripts.Environment
 
         private void InitializeStageMovementRanges()
         {
-            _activeLimits = new RangeAttribute(-1.0f, 2.0f);
+            _activeLimits = new RangeAttribute(0.0f, 5.0f);
         }
 
         public const float Stage_Movement_Speed = 1.0f;

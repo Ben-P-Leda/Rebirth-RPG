@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Scripts.Event_Dispatchers;
 using Scripts.UI;
+using Scripts.Data_Models;
 
 namespace Scripts.UI
 {
@@ -10,10 +11,11 @@ namespace Scripts.UI
         private bool _held;
         private bool _wasHeld;
         private string _buttonName;
+        private bool _disabled;
 
         private UIEventDispatcher _uiEventDispatcher;
 
-        public int MovementStep;
+        public Direction MovementDirection;
         public Texture2D Texture;
 
         public SceneMovementButton()
@@ -21,8 +23,27 @@ namespace Scripts.UI
             _held = false;
             _wasHeld = false;
             _buttonName = "";
+            _disabled = false;
 
             _uiEventDispatcher = new UIEventDispatcher();
+        }
+
+        private void OnEnable()
+        {
+            FieldBoundaryEventDispatcher.FieldBoundaryUpdateEventHandler += HandleBoundaryEvent;
+        }
+
+        private void OnDisable()
+        {
+            FieldBoundaryEventDispatcher.FieldBoundaryUpdateEventHandler -= HandleBoundaryEvent;
+        }
+
+        private void HandleBoundaryEvent(Direction boundaryDirection, bool atBoundary)
+        {
+            if (boundaryDirection == MovementDirection)
+            {
+                _disabled = atBoundary;
+            }
         }
 
         private void Awake()
@@ -35,7 +56,7 @@ namespace Scripts.UI
             float offset = (Screen.width - (Texture.width * UIUtilities.Scaling)) * 0.5f;
 
             _displayArea = new Rect(
-                offset + (offset * MovementStep),
+                offset + (offset * (int)MovementDirection),
                 Screen.height - (Texture.height * UIUtilities.Scaling),
                 Texture.width * UIUtilities.Scaling,
                 Texture.height * UIUtilities.Scaling);
@@ -43,14 +64,16 @@ namespace Scripts.UI
 
         private void OnGUI()
         {
-            if ((GUI.RepeatButton(_displayArea, Texture)) && (!_held))
+            if (!_disabled)
             {
-                _held = true;
-
-                if (!_wasHeld)
+                if ((GUI.RepeatButton(_displayArea, Texture)) && (!_held))
                 {
-                    Debug.Log(string.Format("Button {0} PRESSED", _buttonName));
-                    _uiEventDispatcher.FireUIButtonEvent(_buttonName, true);
+                    _held = true;
+
+                    if (!_wasHeld)
+                    {
+                        _uiEventDispatcher.FireUIButtonEvent(_buttonName, true);
+                    }
                 }
             }
         }
@@ -59,7 +82,6 @@ namespace Scripts.UI
         {
             if ((_wasHeld) && (!_held))
             {
-                Debug.Log(string.Format("Button {0} RELEASED", _buttonName));
                 _uiEventDispatcher.FireUIButtonEvent(_buttonName, false);
             }
 
