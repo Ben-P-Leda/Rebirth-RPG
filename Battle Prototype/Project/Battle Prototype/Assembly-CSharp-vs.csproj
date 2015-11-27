@@ -50,7 +50,6 @@
      <Compile Include="Assets\Scripts\All Characters\DepthController.cs" />
      <Compile Include="Assets\Scripts\All Characters\DisplayController.cs" />
      <Compile Include="Assets\Scripts\All Characters\HealthManager.cs" />
-     <Compile Include="Assets\Scripts\All Characters\MotionEngine.cs" />
      <Compile Include="Assets\Scripts\CharacterDataProvider.cs" />
      <Compile Include="Assets\Scripts\CharacterUtilities.cs" />
      <Compile Include="Assets\Scripts\Data Models\CharacterData.cs" />
@@ -71,6 +70,9 @@
      <Compile Include="Assets\Scripts\Player Characters\PlayerCharacterController.cs" />
      <Compile Include="Assets\Scripts\Player Characters\SelectionHandler.cs" />
      <Compile Include="Assets\Scripts\Player Characters\StageMotionEngine.cs" />
+     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
+     <Compile Include="Assets\Scripts\Shared Components\MotionEngine.cs" />
+     <Compile Include="Assets\Scripts\Shared Components\Utilities.cs" />
      <Compile Include="Assets\Scripts\UI\SceneMovementButton.cs" />
      <Compile Include="Assets\Scripts\UI\UIUtilities.cs" />
  <Reference Include="UnityEngine.UI">

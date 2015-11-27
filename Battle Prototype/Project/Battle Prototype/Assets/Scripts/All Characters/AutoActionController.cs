@@ -2,6 +2,7 @@
 using Scripts.Event_Dispatchers;
 using AnimationEvent = Scripts.Event_Dispatchers.AnimationEvent;
 using Scripts.All_Characters;
+using Scripts.Shared_Components;
 
 namespace Scripts.All_Characters
 {
@@ -142,8 +143,10 @@ namespace Scripts.All_Characters
 
         private bool CloseEnoughToTarget()
         {
-            return (WithinRange(Transform.position.x, _actionLocation.x, RequiredTargetProximity.x)
-                && WithinRange(Transform.position.y, _actionLocation.y, RequiredTargetProximity.y));
+            return Utilities.WithinRequiredProximity(Transform.position, _actionLocation, RequiredTargetProximity);
+
+            //return (WithinRange(Transform.position.x, _actionLocation.x, RequiredTargetProximity.x)
+            //    && WithinRange(Transform.position.y, _actionLocation.y, RequiredTargetProximity.y));
         }
 
         private bool WithinRange(float position, float target, float range)

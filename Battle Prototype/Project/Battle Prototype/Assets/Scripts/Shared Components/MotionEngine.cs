@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Scripts.All_Characters
+namespace Scripts.Shared_Components
 {
     public class MotionEngine
     {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
+using Scripts.Shared_Components;
 
 namespace Scripts.Player_Characters
 {

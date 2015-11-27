@@ -42,6 +42,7 @@ namespace Scripts.Event_Dispatchers
         IncreaseHealth,
         CompletedAutoAction,
         CharacterDead,
-        NpcActionTargetRequested
+        NpcActionTargetRequested,
+        RangeEffectAttack
     }
 }

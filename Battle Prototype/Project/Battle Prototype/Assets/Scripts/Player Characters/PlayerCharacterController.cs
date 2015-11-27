@@ -4,6 +4,7 @@ using Scripts.Data_Models;
 using Scripts.Event_Dispatchers;
 using Scripts.All_Characters;
 using Scripts.UI;
+using Scripts.Shared_Components;
 
 namespace Scripts.Player_Characters
 {

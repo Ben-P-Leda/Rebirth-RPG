@@ -74,6 +74,14 @@ namespace Scripts
                 data.AutoActionEffectMagnitude = 1.0f;
                 data.MovementSpeed += 0.1f;
             }
+            else if (role == "caster")
+            {
+                data.Health += 7.0f;
+                data.RequiredTargetProximity = new Vector2(3.0f, 3.0f);
+                data.AutoActionEffect = StatusMessage.RangeEffectAttack;
+                data.AutoActionEffectMagnitude = 2.0f;
+                data.MovementSpeed += 0.1f;
+            }
         }
 
         public NpcData GetNpcData(Transform characterTransform)
