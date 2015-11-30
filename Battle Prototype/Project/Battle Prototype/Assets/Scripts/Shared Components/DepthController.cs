@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Scripts.All_Characters
+namespace Scripts.Shared_Components
 {
     public class DepthController : MonoBehaviour
     {
