@@ -144,14 +144,6 @@ namespace Scripts.All_Characters
         private bool CloseEnoughToTarget()
         {
             return Utilities.WithinRequiredProximity(Transform.position, _actionLocation, RequiredTargetProximity);
-
-            //return (WithinRange(Transform.position.x, _actionLocation.x, RequiredTargetProximity.x)
-            //    && WithinRange(Transform.position.y, _actionLocation.y, RequiredTargetProximity.y));
-        }
-
-        private bool WithinRange(float position, float target, float range)
-        {
-            return ((position >= target - range) && (position <= target + range));
         }
 
         private void HandleTimerUpdates()
