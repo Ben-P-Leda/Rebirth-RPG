@@ -15,6 +15,7 @@ namespace Scripts.Projectiles
         private SpriteRenderer _spriteRenderer;
 
         private MotionEngine _motionEngine;
+        private StatusEventDispatcher _statusEventDispatcher;
 
         public Projectile() : base()
         {
@@ -22,6 +23,8 @@ namespace Scripts.Projectiles
 
             _motionEngine = new MotionEngine();
             _motionEngine.MovementSpeed = Motion_Speed;
+
+            _statusEventDispatcher = new StatusEventDispatcher();
         }
 
         private void OnEnable()
@@ -57,18 +60,29 @@ namespace Scripts.Projectiles
             _motionEngine.Transform = transform;
 
             _launcherTransform = Launcher.transform;
+            _statusEventDispatcher.Source = _launcherTransform;
         }
 
         private void FixedUpdate()
         {
             if (_targetTransform != null)
             {
-                _motionEngine.MoveTowardsPosition(_targetTransform.position + new Vector3(0.0f, Vertical_Offset, 0.0f));
+                Vector3 targetPosition = _targetTransform.position + new Vector3(0.0f, Vertical_Offset, 0.0f);
+                _motionEngine.MoveTowardsPosition(targetPosition);
+                if (Utilities.WithinRequiredProximity(_tranform.position, targetPosition, Impact_Proximity))
+                {
+                    _statusEventDispatcher.FireStatusEvent(_targetTransform, StatusMessage.ReduceHealth, Damage_Value);
+                    _spriteRenderer.enabled = false;
+                    _targetTransform = null;
+                }
             }
         }
 
         // TODO: Should be from some kind of config...
         private const float Motion_Speed = 10.0f;
+        private const float Damage_Value = 2.0f;
+
         private const float Vertical_Offset = 0.3f;
+        private readonly Vector2 Impact_Proximity = new Vector2(0.1f, 0.1f);
     }
 }
