@@ -63,11 +63,12 @@ namespace Scripts.Projectiles
         {
             if (_targetTransform != null)
             {
-                _motionEngine.MoveTowardsPosition(_targetTransform.position);
+                _motionEngine.MoveTowardsPosition(_targetTransform.position + new Vector3(0.0f, Vertical_Offset, 0.0f));
             }
         }
 
         // TODO: Should be from some kind of config...
         private const float Motion_Speed = 10.0f;
+        private const float Vertical_Offset = 0.3f;
     }
 }
